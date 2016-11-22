@@ -7,7 +7,9 @@ object Loader {
     List(ccOffer, plOffer)
   }
 
-  def filterOfferByUser(user: User) = (offer: OfferTrait) => {
-    offer.isEligable(user)
+  def getOffersByUser(user: User): List[OfferTrait] = {
+    val offers = loadOffers()
+    val userFilter = (offer: OfferTrait) => offer.isEligable(user)
+    offers.filter(userFilter)
   }
 }
