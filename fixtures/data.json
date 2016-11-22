@@ -1,0 +1,103 @@
+[{
+    "creditCard": {
+        "id": 1,
+        "provider": "CapitalOne",
+        "minimumCreditScore": 300,
+        "maximumCreditScore": 700
+    }
+}, {
+    "creditCard": {
+        "id": 2,
+        "provider": "CapitalOne",
+        "minimumCreditScore": 600,
+        "maximumCreditScore": 700
+    }
+}, {
+    "creditCard": {
+        "id": 3,
+        "provider": "Chase",
+        "minimumCreditScore": 300,
+        "maximumCreditScore": 900
+    }
+}, {
+    "personalLoan": {
+        "id": 1,
+        "provider": "Avant",
+        "term": 36,
+        "minimumCreditScore": 300,
+        "maximumCreditScore": 700,
+        "maximumAmount": 10000
+    }
+}, {
+    "personalLoan": {
+        "id": 2,
+        "provider": "Prosper",
+        "term": 24,
+        "minimumCreditScore": 600,
+        "maximumCreditScore": 700,
+        "maximumAmount": 5000
+    }
+}, {
+    "personalLoan": {
+        "id": 2,
+        "provider": "Lending Club",
+        "term": 36,
+        "minimumCreditScore": 600,
+        "maximumCreditScore": 700,
+        "maximumAmount": 3500
+    }
+}, {
+    "personalLoan": {
+        "id": 3,
+        "provider": "Prosper",
+        "term": 36,
+        "minimumCreditScore": 300,
+        "maximumCreditScore": 900,
+        "maximumAmount": 10000
+    }
+}, {
+    "autoLoan": {
+        "id": 1,
+        "provider": "CapitalOne",
+        "term": 36,
+        "minimumCreditScore": 300,
+        "maximumCreditScore": 700,
+        "maximumAmount": 10000
+    }
+}, {
+    "autoLoan": {
+        "id": 2,
+        "provider": "Blue Harbor",
+        "term": 24,
+        "minimumCreditScore": 600,
+        "maximumCreditScore": 700,
+        "maximumAmount": 5000
+    }
+}, {
+    "autoLoan": {
+        "id": 3,
+        "provider": "Blue Harbor",
+        "term": 36,
+        "minimumCreditScore": 600,
+        "maximumCreditScore": 700,
+        "maximumAmount": 3500
+    }
+}, {
+    "autoLoan": {
+        "id": 4,
+        "provider": "USAA",
+        "term": 36,
+        "minimumCreditScore": 300,
+        "maximumCreditScore": 900,
+        "maximumAmount": 10000
+    }
+}, {
+    "autoLoan": {
+        "id": 5,
+        "provider": "USAA",
+        "term": 48,
+        "minimumCreditScore": 100,
+        "maximumCreditScore": 600,
+        "maximumAmount": 3000
+    }
+}]
