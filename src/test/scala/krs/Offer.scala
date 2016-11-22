@@ -1,10 +1,10 @@
 import org.scalatest._
-import krs.Offer
+import krs.CreditCardOffer
 
 class OfferSpec extends FlatSpec with Matchers {
-  val offer = new Offer("Chase", 500, 700)
+  val offer = new CreditCardOffer("Chase", 500, 700)
 
-  "Offer name" should "be Chase for new offer" in {
+  "Offer provider" should "be Chase for new offer" in {
     offer.provider should be("Chase")
   }
 
