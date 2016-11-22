@@ -4,7 +4,6 @@ import krs.PersonalLoanOffer
 
 class LoanSpec extends FlatSpec with Matchers {
   val loan = new PersonalLoanOffer("Chase", 500, 700, 12, 40000.00)
-  val offers = List(loan, new CreditCardOffer("Chase", 500, 700))
 
   "Loan provider" should "be Chase for new offer" in {
     loan.provider should be("Chase")
