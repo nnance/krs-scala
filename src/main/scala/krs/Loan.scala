@@ -3,8 +3,8 @@ package krs
 trait LoanOfferTrait extends OfferTrait {
   var maximumDebt: Double
 
-  def isEligable(creditScore: Short, currentDebt: Double): Boolean = {
-    super.isEligable(creditScore) && currentDebt <= maximumDebt
+  override def isEligable(user: User): Boolean = {
+    super.isEligable(user) && user.outstandingLoanAmount <= maximumDebt
   }
 }
 

@@ -4,8 +4,8 @@ trait OfferTrait {
   var minimumCreditScore: Short
   var maximumCreditScore: Short
 
-  def isEligable(creditScore: Short): Boolean = {
-    creditScore >= minimumCreditScore && creditScore <= maximumCreditScore
+  def isEligable(user: User): Boolean = {
+    user.creditScore >= minimumCreditScore && user.creditScore <= maximumCreditScore
   }
 }
 
