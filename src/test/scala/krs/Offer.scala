@@ -10,7 +10,15 @@ class OfferSpec extends FlatSpec with Matchers {
   }
 
   "Offer isEligable" should "be true for credit score within range" in {
+    import krs._
+    import krs.Eligibility._
+
+    // Original
     offer.isEligable(new User("Test", 500, 0.0)) should be(true)
+
+    // Added for OfferT
+    val offerT = CCOffer("Chase", Range(500, 700))
+    isEligable(offerT, new User("Test", 500, 0.0)) should be(true)
   }
 
   "Offer isEligable" should "be false for credit score outside of range" in {
