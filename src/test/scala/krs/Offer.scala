@@ -41,7 +41,6 @@ class OfferSpec extends FlatSpec with Matchers {
     // Offer06 and Offer07 should be the only thing that user02 is eligible for
     val user02 = new User("TestUser02", 765, 0.0)
 
-
     val offers = List(
       CCOffer("Offer01", Range(500, 700)),
       CCOffer("Offer02", Range(550, 700)),
