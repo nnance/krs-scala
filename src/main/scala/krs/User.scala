@@ -1,3 +1,7 @@
 package krs
 
-class User(val name: String, val creditScore: Short, val outstandingLoanAmount: Double)
+case class User(
+  name: String,
+  creditScore: Short,
+  outstandingLoanAmount: Double
+)

@@ -1,15 +1,17 @@
 package krs
 
 trait OfferTrait {
-  var minimumCreditScore: Short
-  var maximumCreditScore: Short
+  val creditScoreRange: Range
 
   def isEligable(user: User): Boolean = {
-    user.creditScore >= minimumCreditScore && user.creditScore <= maximumCreditScore
+    user.creditScore >= creditScoreRange.min &&
+    user.creditScore <= creditScoreRange.max
   }
 }
 
-class CreditCardOffer(val provider: String, minScore: Short, maxScore: Short) extends OfferTrait {
-  var minimumCreditScore = minScore
-  var maximumCreditScore = maxScore
+case class CreditCardOffer(
+  provider: String,
+  scoreRange: Range)
+    extends OfferTrait {
+      val creditScoreRange = scoreRange
 }
