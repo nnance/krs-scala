@@ -49,7 +49,7 @@ case class CCOffer(provider: String, creditScoreRange: Range) extends OfferT
 
 // Singleton object housing functions for eligibility checks
 object Eligibility {
-  def isEligable(offer: OfferT, user: User): Boolean =
+  def isEligible(offer: OfferT, user: User): Boolean =
     user.creditScore >= offer.creditScoreRange.min &&
     user.creditScore <= offer.creditScoreRange.max
 }

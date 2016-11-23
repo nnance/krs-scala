@@ -18,7 +18,7 @@ class OfferSpec extends FlatSpec with Matchers {
 
     // Added for OfferT
     val offerT = CCOffer("Chase", Range(500, 700))
-    isEligable(offerT, new User("Test", 500, 0.0)) should be(true)
+    isEligible(offerT, new User("Test", 500, 0.0)) should be(true)
   }
 
   "Offer isEligable" should "be false for credit score outside of range" in {
@@ -49,11 +49,11 @@ class OfferSpec extends FlatSpec with Matchers {
       CCOffer("Offer05", Range(700, 770)),
       CCOffer("Offer06", Range(750, 770)))
 
-    val eligibleOffers = offers.filter(offer => isEligable(offer, user01))
+    val eligibleOffers = offers.filter(offer => isEligible(offer, user01))
     eligibleOffers.size should be(1)
     eligibleOffers.head.provider should be("Offer01")
 
-    val eligibleOffers2 = offers.filter(offer => isEligable(offer, user02))
+    val eligibleOffers2 = offers.filter(offer => isEligible(offer, user02))
     eligibleOffers2.size should be(2)
   }
 }
