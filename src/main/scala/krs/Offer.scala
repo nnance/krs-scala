@@ -1,32 +1,19 @@
 package krs
 
-object OfferTypes {
-  // our Offer ADT. This is basically a choise type. An offer can be either
-  // a credit card or a personal loan. the "sealed" keyword basically ensures
-  // only classes in this file can extend the offer trait. Basically this says
-  // if we were to add a new offer to the system the ADT (and everywhere that
-  // uses the ADT) needs to be modified to take into account the new requirement.
-  sealed trait Offer {
-    val provider: String
-    val creditScoreRange: Range
-    val term: Long = 0
-  }
-  case class CreditCard(name: String, scoreRange: Range) extends Offer {
-    val provider = name
-    val creditScoreRange = scoreRange
-  }
-  case class PersonalLoan(name: String, scoreRange: Range, loanTerm: Long) extends Offer {
-    val provider = name
-    val creditScoreRange = scoreRange
-    override val term = loanTerm
-  }
+// our Offer ADT. This is basically a choise type. An offer can be either
+// a credit card or a personal loan. the "sealed" keyword basically ensures
+// only classes in this file can extend the offer trait. Basically this says
+// if we were to add a new offer to the system the ADT (and everywhere that
+// uses the ADT) needs to be modified to take into account the new requirement.
+sealed trait Offer
+case class CreditCard(val provider: String, val creditScoreRange: Range) extends Offer
+case class PersonalLoan(val provider: String, val creditScoreRange: Range, val term: Long) extends Offer
 
-  // Here is our ADT for what an eligibility rule is. Each rule can be one of
-  // the following choices (max loan amount is x, credit score range is min/max)
-  sealed trait EligibilityRule
-  case class CreditScoreRange(range: Range) extends EligibilityRule
-  case class MaxLoanAmount(amount: Long) extends EligibilityRule
-}
+// Here is our ADT for what an eligibility rule is. Each rule can be one of
+// the following choices (max loan amount is x, credit score range is min/max)
+sealed trait EligibilityRule
+case class CreditScoreRange(range: Range) extends EligibilityRule
+case class MaxLoanAmount(amount: Long) extends EligibilityRule
 
 trait OffersDomain {
   // This is where the domain becomes tricky. Does this function take an offer
@@ -43,23 +30,23 @@ trait OffersDomain {
   //
   // Anyway, since we're just modeling the domain here... might as well define
   // the function
-  def isEligible(user: User, rules: Seq[OfferTypes.EligibilityRule]): Boolean
-  def eligibilityRules(offer: OfferTypes.Offer): Seq[OfferTypes.EligibilityRule]
+  def isEligible(user: User, rules: Seq[EligibilityRule]): Boolean
+  def eligibilityRules(offer: Offer): Seq[EligibilityRule]
 }
 
 object OfferSystem extends OffersDomain {
-  def isEligible(user: User, rules: Seq[OfferTypes.EligibilityRule]): Boolean = {
+  def isEligible(user: User, rules: Seq[EligibilityRule]): Boolean = {
     false
   }
 
-  def eligibilityRules(offer: OfferTypes.Offer): Seq[OfferTypes.EligibilityRule] = {
+  def eligibilityRules(offer: Offer): Seq[EligibilityRule] = {
     offer match {
-      case OfferTypes.CreditCard(_, _) => Seq(
-        OfferTypes.CreditScoreRange(offer.creditScoreRange)
+      case CreditCard(_, _) => Seq(
+        CreditScoreRange(offer.asInstanceOf[CreditCard].creditScoreRange)
       )
-      case OfferTypes.PersonalLoan(_, _, _) => Seq(
-        OfferTypes.CreditScoreRange(offer.creditScoreRange),
-        OfferTypes.MaxLoanAmount(offer.term)
+      case PersonalLoan(_, _, _) => Seq(
+        CreditScoreRange(offer.asInstanceOf[PersonalLoan].creditScoreRange),
+        MaxLoanAmount(offer.asInstanceOf[PersonalLoan].term)
       )
     }
   }
