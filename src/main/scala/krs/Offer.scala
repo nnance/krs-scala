@@ -5,18 +5,24 @@ package krs
 // only classes in this file can extend the offer trait. Basically this says
 // if we were to add a new offer to the system the ADT (and everywhere that
 // uses the ADT) needs to be modified to take into account the new requirement.
-sealed trait Offer
+sealed trait Offer {
+  val provider: String
+}
 case class CreditCard(
-  val provider: String,
+  providerName: String,
   val creditScoreRange: Range
-) extends Offer
+) extends Offer {
+  val provider = providerName
+}
 
 case class PersonalLoan(
-  val provider: String,
+  providerName: String,
   val creditScoreRange: Range,
   val maxLoanAmount: Double,
   val term: Long
-) extends Offer
+) extends Offer {
+  val provider = providerName
+}
 
 // Here is our ADT for what an eligibility rule is. Each rule can be one of
 // the following choices (max loan amount is x, credit score range is min/max)
@@ -26,8 +32,9 @@ case class MaxLoanAmount(val amount: Double) extends EligibilityRule
 
 trait OffersDomain {
   def isEligible(user: User, rule: EligibilityRule): Boolean
+  def isEligible(user: User, offer: Offer): Boolean
   def eligibilityRules(offer: Offer): Seq[EligibilityRule]
-  def filterEligible(user: User, rules: Seq[EligibilityRule]): Seq[EligibilityRule]
+  def filterEligible(user: User, offers: Seq[Offer]): Seq[Offer]
 }
 
 object OfferSystem extends OffersDomain {
@@ -52,9 +59,12 @@ object OfferSystem extends OffersDomain {
     }
   }
 
-  // def filterEligible(user: User, offers: Seq[Offer]): Seq[EligibilityRule] = {
-    // val rules = offers.map((offer: Offer) => eligibilityRules(offer))
-    // val userFilter = (ruleList: Seq[EligibilityRule]) => ruleList.reduceLeft((x,y) => isEligible(user, x) && isEligible(user, y)))
-    // rules.filter(userFilter)
-  // }
+  def isEligible(user: User, offer: Offer): Boolean = {
+    val checkEligibility = (rule: EligibilityRule) => isEligible(user, rule)
+    eligibilityRules(offer).map(checkEligibility).fold(true)((x, y) => x && y)
+  }
+
+  def filterEligible(user: User, offers: Seq[Offer]): Seq[Offer] = {
+    offers.filter((offer: Offer) => isEligible(user, offer))
+  }
 }
