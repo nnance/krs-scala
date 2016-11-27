@@ -26,9 +26,13 @@ case class PersonalLoan(
 
 // Here is our ADT for what an eligibility rule is. Each rule can be one of
 // the following choices (max loan amount is x, credit score range is min/max)
-sealed trait EligibilityRule
-case class CreditScoreRange(val range: Range) extends EligibilityRule
-case class MaxLoanAmount(val amount: Double) extends EligibilityRule
+sealed trait Rule
+case class CreditScoreRange(val range: Range) extends Rule
+case class MaxLoanAmount(val amount: Double) extends Rule
+
+sealed trait EligibilityRule[T] {
+  def isEligible(user: User, rule: T): Boolean
+}
 
 trait OffersDomain {
   def isEligible(user: User, offer: Offer): Boolean
@@ -36,30 +40,29 @@ trait OffersDomain {
 }
 
 object OfferSystem extends OffersDomain {
-  def isEligible(user: User, rule: EligibilityRule): Boolean = {
-    rule match {
-      case cs: CreditScoreRange =>
-        user.creditScore >= cs.range.min && user.creditScore <= cs.range.max
-      case ml: MaxLoanAmount =>
-        user.outstandingLoanAmount < ml.amount
-    }
+  implicit object CreditScoreRangeRule extends EligibilityRule[CreditScoreRange] {
+    def isEligible(user: User, rule: CreditScoreRange): Boolean =
+       user.creditScore >= rule.range.min && user.creditScore <= rule.range.max
   }
 
-  def eligibilityRules(offer: Offer): Seq[EligibilityRule] = {
-    offer match {
-      case cc: CreditCard => Seq(
-        CreditScoreRange(cc.creditScoreRange)
-      )
-      case pl: PersonalLoan => Seq(
-        CreditScoreRange(pl.creditScoreRange),
-        MaxLoanAmount(pl.maxLoanAmount)
-      )
-    }
+  implicit object MaxLoanAmountRule extends EligibilityRule[MaxLoanAmount] {
+    def isEligible(user: User, rule: MaxLoanAmount): Boolean =
+       user.outstandingLoanAmount < rule.amount
   }
+
+  def isEligible[T](user: User, t: T)(implicit rule: EligibilityRule[T]) =
+    rule.isEligible(user, t)
 
   def isEligible(user: User, offer: Offer): Boolean = {
-    val checkEligibility = (rule: EligibilityRule) => isEligible(user, rule)
-    eligibilityRules(offer).map(checkEligibility).fold(true)((x, y) => x && y)
+    offer match {
+      case cc: CreditCard => {
+        isEligible(user, CreditScoreRange(cc.creditScoreRange))
+      }
+      case pl: PersonalLoan => {
+        isEligible(user, CreditScoreRange(pl.creditScoreRange)) &&
+        isEligible(user, MaxLoanAmount(pl.maxLoanAmount))
+      }
+    }
   }
 
   def filterEligible(user: User, offers: Seq[Offer]): Seq[Offer] = {

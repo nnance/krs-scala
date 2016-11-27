@@ -2,23 +2,6 @@ import org.scalatest._
 import krs._
 import krs.OfferSystem._
 
-class EligibilityRulesSpec extends FlatSpec with Matchers {
-  val ccOffer = CreditCard("Chase", Range(500, 700))
-  val plOffer = PersonalLoan("Quicken", Range(500, 700), 40000.00, 12)
-
-  "Offer provider" should "be Chase for new offer" in {
-    ccOffer.provider should be("Chase")
-  }
-
-  "Offer eligibilityRules length" should "be 1 for CreditCard offer" in {
-    eligibilityRules(ccOffer).length should be(1)
-  }
-
-  "Offer eligibilityRules length" should "be 2 for PersonalLoan offer" in {
-    eligibilityRules(plOffer).length should be(2)
-  }
-}
-
 class CreditScoreRangeSpec extends FlatSpec with Matchers {
   val ccRule = CreditScoreRange(Range(500, 700))
 
@@ -43,7 +26,7 @@ class MaxLoanAmountSpec extends FlatSpec with Matchers {
   }
 }
 
-class CreditCardEligibilitySpec extends FlatSpec with Matchers {
+class CreditCardOfferSpec extends FlatSpec with Matchers {
   val ccOffer = CreditCard("Chase", Range(500, 700))
 
   "isEligable" should "be true for user with score within range" in {
@@ -55,7 +38,7 @@ class CreditCardEligibilitySpec extends FlatSpec with Matchers {
   }
 }
 
-class PersonalLoanEligibilitySpec extends FlatSpec with Matchers {
+class PersonalLoanOfferSpec extends FlatSpec with Matchers {
   val plOffer = PersonalLoan("Chase", Range(500, 700), 400.00, 12)
 
   "isEligable" should "be true for user with score within range" in {
@@ -71,7 +54,7 @@ class PersonalLoanEligibilitySpec extends FlatSpec with Matchers {
   }
 }
 
-class FilterEligibleRulesSpec extends FlatSpec with Matchers {
+class FilterEligibleOffersSpec extends FlatSpec with Matchers {
   // Offer01 should be the only thing that user01 is eligible for
   val user01 = new User("TestUser01", 500, 100.00)
   // Offer05 and Offer06 should be the only thing that user02 is eligible for
