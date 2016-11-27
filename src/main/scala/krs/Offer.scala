@@ -31,9 +31,7 @@ case class CreditScoreRange(val range: Range) extends EligibilityRule
 case class MaxLoanAmount(val amount: Double) extends EligibilityRule
 
 trait OffersDomain {
-  def isEligible(user: User, rule: EligibilityRule): Boolean
   def isEligible(user: User, offer: Offer): Boolean
-  def eligibilityRules(offer: Offer): Seq[EligibilityRule]
   def filterEligible(user: User, offers: Seq[Offer]): Seq[Offer]
 }
 
