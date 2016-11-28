@@ -1,5 +1,8 @@
 package krs
 
+import org.json4s._
+import org.json4s.native.JsonMethods._
+
 // our Offer ADT. This is basically a choice type. An offer can be either
 // a credit card or a personal loan. the "sealed" keyword basically ensures
 // only classes in this file can extend the offer trait. Basically this says
@@ -7,21 +10,25 @@ package krs
 // uses the ADT) needs to be modified to take into account the new requirement.
 sealed trait Offer {
   val provider: String
+  val creditScoreRange: Range
 }
+
 case class CreditCard(
   providerName: String,
-  val creditScoreRange: Range
+  scoreRange: Range
 ) extends Offer {
   val provider = providerName
+  val creditScoreRange = scoreRange
 }
 
 case class PersonalLoan(
   providerName: String,
-  val creditScoreRange: Range,
+  scoreRange: Range,
   val maxLoanAmount: Double,
   val term: Long
 ) extends Offer {
   val provider = providerName
+  val creditScoreRange = scoreRange
 }
 
 // Here is our ADT for what an eligibility rule is. Each rule can be one of
@@ -40,6 +47,30 @@ trait OffersDomain {
 }
 
 object OfferSystem extends OffersDomain {
+  sealed trait Serializable[T] {
+    def deserialize(json: JValue): T
+  }
+
+  object CreditCardSerializable extends Serializable[CreditCard] {
+    def deserialize(json: JValue): CreditCard = {
+      val JString(provider) = json \ "provider"
+      val JInt(minScore) = json \ "minimumCreditScore"
+      val JInt(maxScore) = json \ "maximumCreditScore"
+      CreditCard(provider, Range(minScore.toInt, maxScore.toInt))
+    }
+  }
+
+  object PersonalLoanSerializable extends Serializable[PersonalLoan] {
+    def deserialize(json: JValue): PersonalLoan = {
+      val JString(provider) = json \ "provider"
+      val JInt(minScore) = json \ "minimumCreditScore"
+      val JInt(maxScore) = json \ "maximumCreditScore"
+      val JInt(term) = json \ "term"
+      val JInt(maxAmt) = json \ "maximumAmount"
+      PersonalLoan(provider, Range(minScore.toInt, maxScore.toInt), maxAmt.toDouble, term.toLong)
+    }
+  }
+
   implicit object CreditScoreRangeRule extends EligibilityRule[CreditScoreRange] {
     def isEligible(user: User, rule: CreditScoreRange): Boolean =
        user.creditScore >= rule.range.min && user.creditScore <= rule.range.max
