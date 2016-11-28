@@ -1,25 +1,14 @@
 import org.scalatest._
-import krs._
+import krs.Loader._
 
 class LoaderSpec extends FlatSpec with Matchers {
-  // val offers = Loader.loadOffers()
-  //
-  // "Offers count" should "be 2" in {
-  //   offers.length should be(2)
-  // }
-  //
-  // "Offers count filtered by a user" should "be 2" in {
-  //   val user = User("Test", 500, 30000.00)
-  //   Loader.getOffersByUser(user).length should be(2)
-  // }
-  //
-  // "Offers count filtered by a user with total debt out of range" should "be 1" in {
-  //   val user = User("Test", 500, 50000.00)
-  //   Loader.getOffersByUser(user).length should be(1)
-  // }
-  //
-  // "Offers count filtered by a user completely out of range" should "be 0" in {
-  //   val user = User("Test", 300, 50000.00)
-  //   Loader.getOffersByUser(user).length should be(0)
-  // }
+  "Read file" should "be 2147 characters for fixture data file" in {
+    readFile("./fixtures/data.json").length should be (2147)
+  }
+
+  "loadOffers" should "have 3 items from CapitalOne" in {
+    val offers = loadOffers(readFile("./fixtures/data.json"))
+    offers.length should be (3)
+    offers(0).provider should be ("CapitalOne")
+  }
 }
