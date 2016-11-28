@@ -6,9 +6,9 @@ class LoaderSpec extends FlatSpec with Matchers {
     readFile("./fixtures/data.json").length should be (2147)
   }
 
-  "loadOffers" should "have 3 items from CapitalOne" in {
+  "loadOffers" should "have 7 items from CapitalOne" in {
     val offers = loadOffers(readFile("./fixtures/data.json"))
-    offers.length should be (3)
+    offers.length should be (7)
     offers(0).provider should be ("CapitalOne")
   }
 }
