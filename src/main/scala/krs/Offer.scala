@@ -37,40 +37,16 @@ sealed trait Rule
 case class CreditScoreRange(val range: Range) extends Rule
 case class MaxLoanAmount(val amount: Double) extends Rule
 
-sealed trait EligibilityRule[T] {
-  def isEligible(user: User, rule: T): Boolean
-}
-
 trait OffersDomain {
+  sealed trait EligibilityRule[T] {
+    def isEligible(user: User, rule: T): Boolean
+  }
+
   def isEligible(user: User, offer: Offer): Boolean
   def filterEligible(user: User, offers: Seq[Offer]): Seq[Offer]
 }
 
 object OfferSystem extends OffersDomain {
-  sealed trait Serializable[T] {
-    def deserialize(json: JValue): T
-  }
-
-  object CreditCardSerializable extends Serializable[CreditCard] {
-    def deserialize(json: JValue): CreditCard = {
-      val JString(provider) = json \ "provider"
-      val JInt(minScore) = json \ "minimumCreditScore"
-      val JInt(maxScore) = json \ "maximumCreditScore"
-      CreditCard(provider, Range(minScore.toInt, maxScore.toInt))
-    }
-  }
-
-  object PersonalLoanSerializable extends Serializable[PersonalLoan] {
-    def deserialize(json: JValue): PersonalLoan = {
-      val JString(provider) = json \ "provider"
-      val JInt(minScore) = json \ "minimumCreditScore"
-      val JInt(maxScore) = json \ "maximumCreditScore"
-      val JInt(term) = json \ "term"
-      val JInt(maxAmt) = json \ "maximumAmount"
-      PersonalLoan(provider, Range(minScore.toInt, maxScore.toInt), maxAmt.toDouble, term.toLong)
-    }
-  }
-
   implicit object CreditScoreRangeRule extends EligibilityRule[CreditScoreRange] {
     def isEligible(user: User, rule: CreditScoreRange): Boolean =
        user.creditScore >= rule.range.min && user.creditScore <= rule.range.max

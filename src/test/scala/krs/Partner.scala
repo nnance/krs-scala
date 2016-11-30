@@ -1,5 +1,5 @@
 import org.scalatest._
-import krs.Loader._
+import krs.PartnerSystem._
 
 class LoaderSpec extends FlatSpec with Matchers {
   "Read file" should "be 2147 characters for fixture data file" in {
