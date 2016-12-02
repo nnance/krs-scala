@@ -6,10 +6,6 @@ com.twitter.scrooge.ScroogeSBT.newSettings
 
 scalariformSettings
 
-resolvers ++= Seq(
-  "twttr" at "http://maven.twttr.com/"
-)
-
 val finagleVersion = "6.14.0"
 
 libraryDependencies ++= Seq(
