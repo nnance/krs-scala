@@ -2,6 +2,8 @@ name := "krs"
 
 scalaVersion := "2.10.6"
 
+com.twitter.scrooge.ScroogeSBT.newSettings
+
 scalariformSettings
 
 resolvers ++= Seq(

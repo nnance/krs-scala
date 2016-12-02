@@ -14,19 +14,17 @@ sealed trait Offer {
 }
 
 case class CreditCard(
-  providerName: String,
-  scoreRange: Range
-) extends Offer {
+    providerName: String,
+    scoreRange: Range) extends Offer {
   val provider = providerName
   val creditScoreRange = scoreRange
 }
 
 case class PersonalLoan(
-  providerName: String,
-  scoreRange: Range,
-  val maxLoanAmount: Double,
-  val term: Long
-) extends Offer {
+    providerName: String,
+    scoreRange: Range,
+    val maxLoanAmount: Double,
+    val term: Long) extends Offer {
   val provider = providerName
   val creditScoreRange = scoreRange
 }
@@ -49,12 +47,12 @@ trait OffersDomain {
 object OfferSystem extends OffersDomain {
   implicit object CreditScoreRangeRule extends EligibilityRule[CreditScoreRange] {
     def isEligible(user: User, rule: CreditScoreRange): Boolean =
-       user.creditScore >= rule.range.min && user.creditScore <= rule.range.max
+      user.creditScore >= rule.range.min && user.creditScore <= rule.range.max
   }
 
   implicit object MaxLoanAmountRule extends EligibilityRule[MaxLoanAmount] {
     def isEligible(user: User, rule: MaxLoanAmount): Boolean =
-       user.outstandingLoanAmount < rule.amount
+      user.outstandingLoanAmount < rule.amount
   }
 
   def isEligible[T](user: User, t: T)(implicit rule: EligibilityRule[T]) =
@@ -67,7 +65,7 @@ object OfferSystem extends OffersDomain {
       }
       case pl: PersonalLoan => {
         isEligible(user, CreditScoreRange(pl.creditScoreRange)) &&
-        isEligible(user, MaxLoanAmount(pl.maxLoanAmount))
+          isEligible(user, MaxLoanAmount(pl.maxLoanAmount))
       }
     }
   }
