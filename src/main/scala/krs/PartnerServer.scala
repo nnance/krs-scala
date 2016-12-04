@@ -12,21 +12,20 @@ import com.twitter.finagle.builder.{ ServerBuilder, Server }
 import thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
 import krs.PartnerSystem._
 
-object PartnerServer {
-
-  def main(args: Array[String]) {
-    val server = Thrift.serveIface("localhost:8081", new PartnerService[Future] {
-      def getOffers() = {
-        val offers = loadOffers(readFile("./fixtures/data.json"))
-        val partnerOffers = offers.map((offer) => {
-          PartnerOffer(
-            offer.provider,
-            Option(offer.creditScoreRange.min),
-            Option(offer.creditScoreRange.max))
-        })
-        Future(OfferResponse(partnerOffers))
-      }
-    })
-    Await.ready(server)
+object PartnerServer extends App {
+  val service = new PartnerService[Future] {
+    def getOffers() = {
+      val offers = loadOffers(readFile("./fixtures/data.json"))
+      val partnerOffers = offers.map((offer) => {
+        PartnerOffer(
+          offer.provider,
+          Option(offer.creditScoreRange.min),
+          Option(offer.creditScoreRange.max))
+      })
+      Future(OfferResponse(partnerOffers))
+    }
   }
+
+  val server = Thrift.server.serveIface("localhost:8081", service)
+  Await.ready(server)
 }
