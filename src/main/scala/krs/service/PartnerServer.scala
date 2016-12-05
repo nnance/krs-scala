@@ -1,4 +1,4 @@
-package krs
+package krs.service
 
 import java.net.InetSocketAddress
 import org.apache.thrift.protocol.TBinaryProtocol
@@ -9,7 +9,7 @@ import com.twitter.finagle.ThriftMux
 import com.twitter.finagle.thrift.ThriftServerFramedCodec
 import com.twitter.finagle.builder.{ ServerBuilder, Server }
 
-import thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
+import krs.thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
 import krs.PartnerSystem._
 
 object PartnerServer extends App {
