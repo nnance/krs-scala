@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.0",
   "org.scalatest" %% "scalatest" % "3.0.0" % "test",
   "org.json4s" %% "json4s-native" % "3.5.0",
+  "org.json4s" %% "json4s-jackson" % "3.5.0",
   "com.twitter" %% "finagle-http" % finagleVersion,
   "com.twitter" %% "finagle-thrift" % finagleVersion,
   "com.twitter" %% "finagle-thriftmux" % finagleVersion,

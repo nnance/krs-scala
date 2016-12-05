@@ -33,7 +33,10 @@ object PartnerSystem extends PartnerDomain {
   }
 
   def readFile(fileName: String): String = {
-    Source.fromFile(fileName).getLines.fold("")((x, y) => x + y)
+    val bufferedSource = Source.fromFile(fileName)
+    val fileCache = bufferedSource.getLines.fold("")((x, y) => x + y)
+    bufferedSource.close()
+    fileCache
   }
 
   def loadOffers(source: String): List[Offer] = {
