@@ -3,7 +3,6 @@ package krs
 import scala.io.Source
 import org.json4s._
 import org.json4s.native.JsonMethods._
-import krs.OfferSystem._
 
 trait PartnerDomain {
   sealed trait Serializable[T] {

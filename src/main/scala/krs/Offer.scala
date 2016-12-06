@@ -1,8 +1,5 @@
 package krs
 
-import org.json4s._
-import org.json4s.native.JsonMethods._
-
 // our Offer ADT. This is basically a choice type. An offer can be either
 // a credit card or a personal loan. the "sealed" keyword basically ensures
 // only classes in this file can extend the offer trait. Basically this says

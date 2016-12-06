@@ -4,13 +4,12 @@ import com.twitter.finagle.{ Http, Service }
 import com.twitter.finagle.http
 import com.twitter.finagle.Thrift
 
-import org.json4s._
 import org.json4s.JsonDSL._
 import org.json4s.jackson.JsonMethods._
 
 import com.twitter.util.{ Await, Future }
 
-import krs.thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
+import krs.thriftscala.{ PartnerService, OfferResponse }
 
 object PartnerClient extends App {
   val service = new Service[http.Request, http.Response] {
@@ -18,19 +17,19 @@ object PartnerClient extends App {
       val client: PartnerService.FutureIface =
         Thrift.client.newIface[PartnerService.FutureIface]("localhost:8081", classOf[PartnerService.FutureIface])
 
-      client.getOffers().onSuccess { response: OfferResponse =>
+      client.getOffers().map((response: OfferResponse) => {
         val json =
           ("offers" ->
             response.offers.map { offer =>
               (("provider" -> offer.provider))
             })
-        println(compact(render(json)))
-      }
-      // val result: Future[Log.Result] = clientServiceIface.getOffers()
+        // println(compact(render(json)))
+        // val result: Future[Log.Result] = clientServiceIface.getOffers()
 
-      Future.value(
-        http.Response(req.version, http.Status.Ok)
-      )
+        val httpResponse = http.Response(req.version, http.Status.Ok)
+        httpResponse.setContentString(compact(render(json)))
+        httpResponse
+      })
     }
   }
 

@@ -1,7 +1,6 @@
 name := "krs"
 
 scalaVersion := "2.11.8"
-ensimeScalaVersion := "2.11.8"
 
 com.twitter.scrooge.ScroogeSBT.newSettings
 
