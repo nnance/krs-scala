@@ -21,11 +21,12 @@ object PartnerClient extends App {
         val json =
           ("offers" ->
             response.offers.map { offer =>
-              (("provider" -> offer.provider))
+              (
+                ("provider" -> offer.provider) ~
+                ("minScore" -> offer.minimumCreditScore.getOrElse(0)) ~
+                ("maxScore" -> offer.maximumCreditScore.getOrElse(0))
+              )
             })
-        // println(compact(render(json)))
-        // val result: Future[Log.Result] = clientServiceIface.getOffers()
-
         val httpResponse = http.Response(req.version, http.Status.Ok)
         httpResponse.setContentString(compact(render(json)))
         httpResponse

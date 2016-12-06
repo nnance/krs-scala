@@ -6,6 +6,8 @@ com.twitter.scrooge.ScroogeSBT.newSettings
 
 scalariformSettings
 
+ensimeIgnoreMissingDirectories := true
+
 val finagleVersion = "6.40.0"
 
 libraryDependencies ++= Seq(
