@@ -12,12 +12,12 @@ import com.twitter.util.{ Await, Future }
 import krs.thriftscala.{ PartnerService, OfferResponse }
 
 object PartnerClient extends App {
+  val client: PartnerService.FutureIface =
+    Thrift.client.newIface[PartnerService.FutureIface]("localhost:8081", classOf[PartnerService.FutureIface])
+
   val service = new Service[http.Request, http.Response] {
     def apply(req: http.Request): Future[http.Response] = {
-      val client: PartnerService.FutureIface =
-        Thrift.client.newIface[PartnerService.FutureIface]("localhost:8081", classOf[PartnerService.FutureIface])
-
-      client.getOffers().map((response: OfferResponse) => {
+      client.getOffers().map((response) => {
         val json =
           ("offers" ->
             response.offers.map { offer =>
