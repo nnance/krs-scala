@@ -8,9 +8,10 @@ import krs.thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
 import krs.PartnerSystem._
 
 object PartnerServer extends TwitterServer {
+  val offers = loadOffers(readFile("./fixtures/data.json"))
+
   def buildServer(): PartnerService[Future] = {
     new PartnerService[Future] {
-      val offers = loadOffers(readFile("./fixtures/data.json"))
       def getOffers() = {
         val partnerOffers = offers.map((offer) => {
           PartnerOffer(
@@ -18,7 +19,7 @@ object PartnerServer extends TwitterServer {
             Option(offer.creditScoreRange.min),
             Option(offer.creditScoreRange.max))
         })
-        Future(OfferResponse(partnerOffers))
+        Future.value(OfferResponse(partnerOffers))
       }
     }
   }
