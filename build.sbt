@@ -13,7 +13,8 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.0" % "test",
   "org.json4s" %% "json4s-native" % "3.5.0",
   "com.github.finagle" %% "finch-core" % "0.11.0-M4",
-  "com.github.finagle" %% "finch-json4s" % "0.11.0-M4",
+  "com.github.finagle" %% "finch-circe" % "0.11.0-M4",
+  "io.circe" %% "circe-generic" % "0.5.3",
   "com.twitter" %% "twitter-server" % "1.25.0",
   "com.twitter" %% "scrooge-core" % "4.12.0",
   "org.apache.thrift" % "libthrift" % "0.9.3"
