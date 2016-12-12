@@ -1,4 +1,4 @@
-package krs.service
+package krs.api
 
 import com.twitter.app.Flag
 import com.twitter.finagle.{ Http, Service }
@@ -12,14 +12,11 @@ import io.circe.generic.auto._
 
 import com.twitter.finagle.Thrift
 
-// import org.json4s.JsonDSL._
-// import org.json4s.jackson.JsonMethods._
-
 import com.twitter.util.{ Await, Future }
 
 import krs.thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
 
-object PartnerClient extends TwitterServer {
+object APIServer extends TwitterServer {
 
   val port: Flag[Int] = flag("port", 8080, "TCP port for HTTP server")
 
