@@ -45,9 +45,9 @@ object PartnerSystem extends PartnerDomain {
       JObject(offers) <- items
     } yield offers
 
-    def deserialize(offer: List[(String, JValue)]): Option[Offer] = offer(0)_1 match {
-      case "creditCard" => Option(CreditCardSerializable.deserialize(offer(0)_2))
-      case "personalLoan" => Option(PersonalLoanSerializable.deserialize(offer(0)_2))
+    def deserialize(offer: List[(String, JValue)]): Option[Offer] = offer(0)._1 match {
+      case "creditCard" => Option(CreditCardSerializable.deserialize(offer(0)._2))
+      case "personalLoan" => Option(PersonalLoanSerializable.deserialize(offer(0)._2))
       case _ => None
     }
     offers.map(deserialize).flatten
