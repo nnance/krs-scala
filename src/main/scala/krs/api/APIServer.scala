@@ -16,15 +16,7 @@ import com.twitter.util.{ Await }
 
 import krs.thriftscala.{ PartnerService, OfferResponse }
 
-object APIServer extends TwitterServer {
-
-  val port: Flag[Int] = flag("port", 8080, "TCP port for HTTP server")
-
-  val todos: Counter = statsReceiver.counter("partnerclient")
-
-  val client: PartnerService.FutureIface =
-    Thrift.client.newIface[PartnerService.FutureIface]("localhost:8081", classOf[PartnerService.FutureIface])
-
+trait PartnerResponseEncoders {
   implicit val encodeOfferResponse: Encoder[OfferResponse] = Encoder.instance(e =>
     Json.obj(
       "offers" -> Json.fromValues(e.offers.map((o) => {
@@ -36,6 +28,16 @@ object APIServer extends TwitterServer {
       }))
     )
   )
+}
+
+object APIServer extends TwitterServer with PartnerResponseEncoders {
+
+  val port: Flag[Int] = flag("port", 8080, "TCP port for HTTP server")
+
+  val todos: Counter = statsReceiver.counter("partnerclient")
+
+  val client: PartnerService.FutureIface =
+    Thrift.client.newIface[PartnerService.FutureIface]("localhost:8081", classOf[PartnerService.FutureIface])
 
   def getOffers: Endpoint[OfferResponse] = get("offers") {
     client.getOffers().map(Ok)
