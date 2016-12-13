@@ -19,3 +19,31 @@ changes to the software architecture.
 
 The json data used for validation is included in the [data.json](./fixtures/data.json) file in the fixtures folder. This data
 should be deserialized and processed by type.  
+
+## Getting started
+
+Starting the Partner Service
+
+```sh
+sbt "runMain krs.service.PartnerServer"
+```
+
+Starting the API Service
+
+```sh
+sbt "runMain krs.api.APIServer -admin.port=:9991"
+```
+
+## Testing
+
+Confirming API Service
+
+```sh
+curl http://localhost:8080/offers
+```
+
+Load Testing
+```sh
+brew install wrk
+wrk -t12 -c400 -d30s http://127.0.0.1:8080
+```
