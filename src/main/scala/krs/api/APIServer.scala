@@ -8,13 +8,13 @@ import com.twitter.server.TwitterServer
 
 import io.finch._
 import io.finch.circe._
-import io.circe.generic.auto._
+import io.circe.{ Encoder, Json }
 
 import com.twitter.finagle.Thrift
 
-import com.twitter.util.{ Await, Future }
+import com.twitter.util.{ Await }
 
-import krs.thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
+import krs.thriftscala.{ PartnerService, OfferResponse }
 
 object APIServer extends TwitterServer {
 
@@ -22,20 +22,23 @@ object APIServer extends TwitterServer {
 
   val todos: Counter = statsReceiver.counter("partnerclient")
 
-  case class Offer(partner: String, minimumScore: Int, maximumScore: Int)
-
   val client: PartnerService.FutureIface =
     Thrift.client.newIface[PartnerService.FutureIface]("localhost:8081", classOf[PartnerService.FutureIface])
 
-  def getOffers: Endpoint[Seq[Offer]] = get("offers") {
-    client.getOffers().map((response) => {
-      val offers = response.offers.map {
-        case PartnerOffer(provider, Some(min), Some(max)) =>
-          Some(Offer(provider, min, max))
-        case _ => None
-      }.flatten
-      Ok(offers)
-    })
+  implicit val encodeOfferResponse: Encoder[OfferResponse] = Encoder.instance(e =>
+    Json.obj(
+      "offers" -> Json.fromValues(e.offers.map((o) => {
+        Json.obj(
+          "provider" -> Json.fromString(o.provider),
+          "minimumScore" -> Json.fromInt(o.minimumCreditScore.getOrElse(0)),
+          "maximumScore" -> Json.fromInt(o.maximumCreditScore.getOrElse(0))
+        )
+      }))
+    )
+  )
+
+  def getOffers: Endpoint[OfferResponse] = get("offers") {
+    client.getOffers().map(Ok)
   }
 
   val api: Service[Request, Response] = (
