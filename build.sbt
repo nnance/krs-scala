@@ -17,7 +17,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic" % "0.5.3",
   "com.twitter" %% "twitter-server" % "1.25.0",
   "com.twitter" %% "finagle-stats" % "6.40.0",
-  "com.twitter.common" % "metrics" % "0.0.37",
+  "com.twitter.common" % "metrics" % "0.0.38",
   "com.twitter" %% "scrooge-core" % "4.12.0",
   "org.apache.thrift" % "libthrift" % "0.9.3"
 )

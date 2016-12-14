@@ -9,7 +9,7 @@ import krs.thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
 import krs.PartnerSystem._
 
 object PartnerServer extends TwitterServer {
-  val offers = loadOffers(readFile("./fixtures/offers.json"))
+  val offers = loadOffers(readFile("./fixtures/data.json"))
 
   def buildServer(): PartnerService[Future] = {
     new PartnerService[Future] {
