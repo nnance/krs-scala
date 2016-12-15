@@ -5,15 +5,13 @@ import com.twitter.finagle.{ Http, Service }
 import com.twitter.finagle.http.{ Request, Response }
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
-
 import io.finch._
 import io.finch.circe._
+import com.twitter.util.Await
 
-import com.twitter.util.{ Await }
-
-object APIService extends OfferResponseEncoders {
+object APIService extends OfferResponseEncoders with UserEncoders {
   val api: Service[Request, Response] = (
-    OfferAPI.getOffers
+    OfferAPI.getOffers :+: UserAPI.getUsers
   ).toServiceAs[Application.Json]
 }
 
