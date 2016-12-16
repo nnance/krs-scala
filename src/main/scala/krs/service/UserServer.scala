@@ -5,6 +5,7 @@ import com.twitter.finagle.Thrift
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
 import krs.thriftscala._
+import krs.UserNotFound
 import krs.UserSystem._
 
 object UserServer extends TwitterServer {
@@ -14,9 +15,17 @@ object UserServer extends TwitterServer {
     new UserService[Future] {
       def getUsers() = {
         val serviceUsers: List[krs.thriftscala.User] = users.map((user) => {
-          krs.thriftscala.User(user.id, user.name, user.creditScore, Some(user.outstandingLoanAmount))
+          User(user.id, user.name, user.creditScore, Some(user.outstandingLoanAmount))
         })
         Future.value(serviceUsers)
+      }
+
+      def getUser(id: Int) = {
+        val user: krs.thriftscala.User = users.find((user) => user.id == id) match {
+          case Some(u) => User(user.id, user.name, user.creditScore, Some(user.outstandingLoanAmount))
+          case None => throw UserNotFound(id)
+        }
+        Future.value(user)
       }
     }
   }

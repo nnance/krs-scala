@@ -11,7 +11,11 @@ case class User(
   creditScore: Int,
   outstandingLoanAmount: Double)
 
-object UserSystem {
+  case class UserNotFound(id: Int) extends Exception {
+    override def getMessage: String = s"User(${id.toString}) not found."
+  }
+
+  object UserSystem {
 
   def readFile(fileName: String): String = {
     val bufferedSource = Source.fromFile(fileName)
