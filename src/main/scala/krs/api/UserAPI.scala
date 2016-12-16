@@ -13,8 +13,8 @@ trait UserEncoders {
       Json.obj(
         "id" -> Json.fromInt(u.id),
         "name" -> Json.fromString(u.name),
-        "creditScore" -> Json.fromInt(u.creditScore)
-      //      "outstandingLoanAmount" -> Json.fromDouble(u.outstandingLoanAmount.getOrElse(0))
+        "creditScore" -> Json.fromInt(u.creditScore),
+        "outstandingLoanAmount" -> Json.fromDoubleOrNull(u.outstandingLoanAmount.getOrElse(0))
       )
     }))
   )
