@@ -7,9 +7,10 @@ import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
 import io.finch._
 import io.finch.circe._
+import io.circe.generic.auto._
 import com.twitter.util.Await
 
-object APIService extends OfferResponseEncoders with UserEncoders {
+object APIService {
   val api: Service[Request, Response] = (
     OfferAPI.getOffers :+: UserAPI.getUsers :+: UserAPI.getUser
   ).toServiceAs[Application.Json]
