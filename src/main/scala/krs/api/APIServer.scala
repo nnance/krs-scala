@@ -11,7 +11,7 @@ import com.twitter.util.Await
 
 object APIService extends OfferResponseEncoders with UserEncoders {
   val api: Service[Request, Response] = (
-    OfferAPI.getOffers :+: UserAPI.getUsers
+    OfferAPI.getOffers :+: UserAPI.getUsers :+: UserAPI.getUser
   ).toServiceAs[Application.Json]
 }
 
