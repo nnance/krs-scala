@@ -28,10 +28,16 @@ Starting the Partner Service
 sbt "runMain krs.service.PartnerServer"
 ```
 
+Starting the User Service
+
+```sh
+sbt "runMain krs.service.UserServer -admin.port=:9991"
+```
+
 Starting the API Service
 
 ```sh
-sbt "runMain krs.api.APIServer -admin.port=:9991"
+sbt "runMain krs.api.APIServer -admin.port=:9992"
 ```
 
 ## Testing

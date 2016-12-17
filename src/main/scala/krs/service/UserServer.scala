@@ -5,8 +5,11 @@ import com.twitter.finagle.Thrift
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
 import krs.thriftscala._
-import krs.UserNotFound
 import krs.UserSystem._
+
+case class UserNotFound(id: Int) extends Exception {
+  override def getMessage: String = s"User(${id.toString}) not found."
+}
 
 object UserServer extends TwitterServer {
   val users = loadUsers(readFile("./fixtures/users.json"))
@@ -22,7 +25,7 @@ object UserServer extends TwitterServer {
 
       def getUser(id: Int) = {
         val user: krs.thriftscala.User = users.find((user) => user.id == id) match {
-          case Some(u) => User(user.id, user.name, user.creditScore, Some(user.outstandingLoanAmount))
+          case Some(u) => User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount))
           case None => throw UserNotFound(id)
         }
         Future.value(user)
