@@ -1,4 +1,4 @@
-package krs.api
+package krs.service.client
 
 import com.twitter.app.Flag
 import com.twitter.finagle.{ Http, Service }

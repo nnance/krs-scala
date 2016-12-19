@@ -1,24 +1,22 @@
 package krs.api
 
-import com.twitter.finagle.Thrift
+import krs.domain.{ User, UserRepository }
 
-import io.finch._
-import krs.thriftscala.{ UserService }
+case class UserNotFound(id: Int) extends Exception {
+  override def getMessage: String = s"User(${id.toString}) not found."
+}
 
-case class User(id: Int, name: String, creditScore: Int)
-
-object UserAPI {
-  val client: UserService.FutureIface =
-    Thrift.client.newIface[UserService.FutureIface]("localhost:8082", classOf[UserService.FutureIface])
-
-  def convertUser(u: krs.thriftscala.User) =
-    User(u.id, u.name, u.creditScore)
-
-  def getUsers: Endpoint[Seq[User]] = get("users") {
-    client.getUsers().map(users => Ok(users.map(convertUser)))
+class UserApi(userRepository: UserRepository) {
+  def getUsers() = {
+    userRepository.loadUsers()
   }
 
-  def getUser: Endpoint[User] = get("user" :: int) { id: Int =>
-    client.getUser(id).map(u => Ok(convertUser(u)))
+  def getUser(id: Int) = {
+    val users = userRepository.loadUsers()
+    val user: User = users.find((user) => user.id == id) match {
+      case Some(u) => u
+      case None => throw UserNotFound(id)
+    }
+    user
   }
 }

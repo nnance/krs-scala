@@ -4,44 +4,39 @@ import com.twitter.util.{ Await, Future }
 import com.twitter.finagle.Thrift
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
-import krs.thriftscala._
-import krs.infrastructure._
+import krs.thriftscala.{ User, UserService }
+import krs.infrastructure.{ Injector }
 
-case class UserNotFound(id: Int) extends Exception {
-  override def getMessage: String = s"User(${id.toString}) not found."
-}
+class UserServiceImpl() {
 
-object UserServer extends TwitterServer {
-  val infra = new Injector()
-  val users = infra.userRepository.loadUsers()
-
-  def buildServer(): UserService[Future] = {
+  def apply(): UserService[Future] = {
     new UserService[Future] {
+      val infra = new Injector()
       def getUsers() = {
-        val serviceUsers: List[krs.thriftscala.User] = users.map((user) => {
-          User(user.id, user.name, user.creditScore, Some(user.outstandingLoanAmount))
+        val serviceUsers: List[User] = infra.userApi.getUsers().map((u) => {
+          User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount))
         })
         Future.value(serviceUsers)
       }
 
       def getUser(id: Int) = {
-        val user: krs.thriftscala.User = users.find((user) => user.id == id) match {
-          case Some(u) => User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount))
-          case None => throw UserNotFound(id)
-        }
-        Future.value(user)
+        val u = infra.userApi.getUser(id)
+        Future.value(
+          User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount))
+        )
       }
     }
   }
+}
 
+object UserServer extends TwitterServer {
+  val serviceImpl: UserServiceImpl = new UserServiceImpl()
   val userService: Counter = statsReceiver.counter("userService")
 
   def main(): Unit = {
-    val service = buildServer()
-
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface("localhost:8082", service)
+      .serveIface("localhost:8082", serviceImpl())
 
     onExit { server.close() }
     Await.ready(server)

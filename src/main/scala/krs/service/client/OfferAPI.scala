@@ -1,4 +1,4 @@
-package krs.api
+package krs.service.client
 
 import com.twitter.finagle.Thrift
 
