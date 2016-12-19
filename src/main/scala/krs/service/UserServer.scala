@@ -12,8 +12,8 @@ case class UserNotFound(id: Int) extends Exception {
 }
 
 object UserServer extends TwitterServer {
-  val repo = UserRepositoryFS("./fixtures/users.json")
-  val users = repo.loadUsers()
+  val infra = new Injector()
+  val users = infra.userRepository.loadUsers()
 
   def buildServer(): UserService[Future] = {
     new UserService[Future] {
