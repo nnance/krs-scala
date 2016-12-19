@@ -1,4 +1,4 @@
-package krs
+package krs.domain
 
 import scala.io.Source
 import org.json4s._

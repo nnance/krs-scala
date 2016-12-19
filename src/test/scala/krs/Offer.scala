@@ -1,8 +1,8 @@
 package krs
 
 import org.scalatest._
-import krs._
-import krs.OfferSystem._
+import krs.domain._
+import krs.domain.OfferSystem._
 
 class CreditScoreRangeSpec extends FlatSpec with Matchers {
   val ccRule = CreditScoreRange(Range(500, 700))

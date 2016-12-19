@@ -5,14 +5,15 @@ import com.twitter.finagle.Thrift
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
 import krs.thriftscala._
-import krs.UserSystem._
+import krs.infrastructure._
 
 case class UserNotFound(id: Int) extends Exception {
   override def getMessage: String = s"User(${id.toString}) not found."
 }
 
 object UserServer extends TwitterServer {
-  val users = loadUsers(readFile("./fixtures/users.json"))
+  val repo = UserRepositoryFS("./fixtures/users.json")
+  val users = repo.loadUsers()
 
   def buildServer(): UserService[Future] = {
     new UserService[Future] {

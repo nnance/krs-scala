@@ -6,7 +6,7 @@ import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
 
 import krs.thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
-import krs.PartnerSystem._
+import krs.domain.PartnerSystem._
 
 object PartnerServer extends TwitterServer {
   val offers = loadOffers(readFile("./fixtures/offers.json"))

@@ -1,4 +1,4 @@
-package krs
+package krs.domain
 
 // our Offer ADT. This is basically a choice type. An offer can be either
 // a credit card or a personal loan. the "sealed" keyword basically ensures

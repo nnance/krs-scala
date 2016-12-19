@@ -1,6 +1,6 @@
 package krs.infrastructure
 
-import krs.{ User, UserRepository }
+import krs.domain.{ User, UserRepository }
 
 import io.circe._
 import io.circe.generic.auto._

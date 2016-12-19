@@ -1,7 +1,7 @@
 package krs
 
 import org.scalatest._
-import krs.PartnerSystem._
+import krs.domain.PartnerSystem._
 
 class LoaderSpec extends FlatSpec with Matchers {
   val fixtureData = "./fixtures/offers.json"
