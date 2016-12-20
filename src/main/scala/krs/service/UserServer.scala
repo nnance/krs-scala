@@ -1,36 +1,13 @@
 package krs.service
 
-import com.twitter.util.{ Await, Future }
+import com.twitter.util.{ Await }
 import com.twitter.finagle.Thrift
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
-import krs.thriftscala.{ User, UserService }
-import krs.infrastructure.{ Injector }
-
-class UserServiceImpl() {
-
-  def apply(): UserService[Future] = {
-    new UserService[Future] {
-      val infra = new Injector()
-      def getUsers() = {
-        val serviceUsers: List[User] = infra.userApi.getUsers().map((u) => {
-          User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount))
-        })
-        Future.value(serviceUsers)
-      }
-
-      def getUser(id: Int) = {
-        val u = infra.userApi.getUser(id)
-        Future.value(
-          User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount))
-        )
-      }
-    }
-  }
-}
+import krs.service.impl.{ UserServerImpl }
 
 object UserServer extends TwitterServer {
-  val serviceImpl: UserServiceImpl = new UserServiceImpl()
+  val serviceImpl = new UserServerImpl()
   val userService: Counter = statsReceiver.counter("userService")
 
   def main(): Unit = {
