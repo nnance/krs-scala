@@ -1,16 +1,15 @@
-package krs.service.impl
+package krs.api
 
 import com.twitter.util.{ Future }
 import krs.thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
-import krs.api.ApiModule
-import krs.domain.DomainModule
-import krs.infrastructure.InfrastructureModule
 
-class PartnerServerImpl() extends InfrastructureModule with ApiModule with DomainModule {
+import krs.domain.{ PartnerRepository }
+
+class PartnerServerImpl(partnerRepository: PartnerRepository) {
   def apply() = {
     new PartnerService[Future] {
       def getOffers() = {
-        val partnerOffers = partnerApi.getOffers().map((offer) => {
+        val partnerOffers = partnerRepository.loadOffers().map((offer) => {
           PartnerOffer(
             offer.provider,
             Option(offer.creditScoreRange.min),

@@ -5,15 +5,11 @@ import com.twitter.finagle.Thrift
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
 
-import krs.service.impl.{ PartnerServerImpl }
-
-object PartnerServer extends TwitterServer {
-  val serviceImpl = new PartnerServerImpl()
+object PartnerServer extends TwitterServer with ServiceModule {
+  val service = partnerApi()
   val partnerService: Counter = statsReceiver.counter("partnerService")
 
   def main(): Unit = {
-    val service = serviceImpl()
-
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
       .serveIface("localhost:8081", service)
