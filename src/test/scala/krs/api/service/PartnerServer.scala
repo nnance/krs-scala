@@ -1,4 +1,4 @@
-package krs.api
+package krs.api.service
 
 import com.twitter.util.{ Await }
 import org.scalatest.{ FlatSpec, Matchers }

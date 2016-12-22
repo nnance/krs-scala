@@ -1,4 +1,4 @@
-package krs.api
+package krs.api.service
 
 import com.twitter.util.{ Future }
 import krs.thriftscala.{ PartnerService, PartnerOffer, OfferResponse }

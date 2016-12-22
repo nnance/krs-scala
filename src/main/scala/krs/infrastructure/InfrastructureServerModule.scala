@@ -1,7 +1,7 @@
 package krs.infrastructure
 
 import krs.domain._
-import krs.api.{ ServerModule }
+import krs.api.service.{ ServerModule }
 
 trait InfrastructureServerModule { this: ServerModule with DomainModule =>
 

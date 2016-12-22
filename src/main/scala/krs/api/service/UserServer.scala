@@ -1,8 +1,9 @@
-package krs.api
+package krs.api.service
 
 import com.twitter.util.{ Future }
 import krs.thriftscala.{ User, UserService }
 
+import krs.api.{ UserNotFound }
 import krs.domain.{ UserRepository }
 
 class UserServer(userRepository: UserRepository) {

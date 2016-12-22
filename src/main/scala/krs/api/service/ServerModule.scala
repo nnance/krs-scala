@@ -1,4 +1,4 @@
-package krs.api
+package krs.api.service
 
 import krs.domain.{ DomainModule }
 

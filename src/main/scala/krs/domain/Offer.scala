@@ -37,7 +37,6 @@ trait OffersDomain {
     def isEligible(user: User, rule: T): Boolean
   }
 
-  def isEligible(user: User, offer: Offer): Boolean
   def filterEligible(user: User, offers: Seq[Offer]): Seq[Offer]
 }
 
