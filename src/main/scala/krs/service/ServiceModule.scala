@@ -1,7 +1,7 @@
 package krs.service
 
-import krs.infrastructure.InfrastructureModule
+import krs.infrastructure.InfrastructureServerModule
 import krs.api.ServerModule
 import krs.domain.DomainModule
 
-trait ServiceModule extends InfrastructureModule with ServerModule with DomainModule
+trait ServiceModule extends InfrastructureServerModule with ServerModule with DomainModule

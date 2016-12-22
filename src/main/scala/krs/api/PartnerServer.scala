@@ -5,7 +5,7 @@ import krs.thriftscala.{ PartnerService, PartnerOffer, OfferResponse }
 
 import krs.domain.{ PartnerRepository }
 
-class PartnerServerImpl(partnerRepository: PartnerRepository) {
+class PartnerServer(partnerRepository: PartnerRepository) {
   def apply() = {
     new PartnerService[Future] {
       def getOffers() = {

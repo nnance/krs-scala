@@ -5,7 +5,7 @@ import krs.thriftscala.{ User, UserService }
 
 import krs.domain.{ UserRepository }
 
-class UserServerImpl(userRepository: UserRepository) {
+class UserServer(userRepository: UserRepository) {
   def apply() = {
     new UserService[Future] {
       def getUsers() = {
