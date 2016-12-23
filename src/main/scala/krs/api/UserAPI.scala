@@ -12,8 +12,7 @@ class UserApi(userRepository: UserRepository) {
   }
 
   def getUser(id: Int) = {
-    val users = userRepository.loadUsers()
-    val user: User = users.find((user) => user.id == id) match {
+    val user: User = userRepository.getUser(id) match {
       case Some(u) => u
       case None => throw UserNotFound(id)
     }

@@ -11,20 +11,14 @@ sealed trait Offer {
 }
 
 case class CreditCard(
-    providerName: String,
-    scoreRange: Range) extends Offer {
-  val provider = providerName
-  val creditScoreRange = scoreRange
-}
+  provider: String,
+  creditScoreRange: Range) extends Offer
 
 case class PersonalLoan(
-    providerName: String,
-    scoreRange: Range,
-    val maxLoanAmount: Double,
-    val term: Long) extends Offer {
-  val provider = providerName
-  val creditScoreRange = scoreRange
-}
+  provider: String,
+  creditScoreRange: Range,
+  val maxLoanAmount: Double,
+  val term: Long) extends Offer
 
 // Here is our ADT for what an eligibility rule is. Each rule can be one of
 // the following choices (max loan amount is x, credit score range is min/max)
