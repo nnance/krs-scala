@@ -5,7 +5,7 @@ import krs.api.service.{ ServerModule }
 
 trait InfrastructureServerModule { this: ServerModule with DomainModule =>
 
-  val userRepository: UserRepository = new UserRepositoryFS("./fixtures/users.json")
-  val partnerRepository: PartnerRepository = new PartnerRepositoryFS("./fixtures/offers.json")
+  val userRepository = UserRepositoryFS("./fixtures/users.json")
+  val partnerRepository = PartnerRepositoryFS("./fixtures/offers.json")
 
 }
