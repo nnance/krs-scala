@@ -1,7 +1,6 @@
 package krs.infrastructure
 
 import org.scalatest._
-import krs.infrastructure._
 
 case class FileSystemTest() extends FileSystem
 

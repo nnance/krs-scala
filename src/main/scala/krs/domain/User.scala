@@ -1,10 +1,5 @@
 package krs.domain
 
-import scala.io.Source
-import io.circe._
-import io.circe.generic.auto._
-import io.circe.parser._
-
 sealed trait UserTrait {
   val id: Int
   val name: String
@@ -12,15 +7,15 @@ sealed trait UserTrait {
   val outstandingLoanAmount: Double
 }
 
+case class UserNotFound(id: Int) extends Exception {
+  override def getMessage: String = s"User(${id.toString}) not found."
+}
+
 case class User(
   id: Int,
   name: String,
   creditScore: Int,
   outstandingLoanAmount: Double) extends UserTrait
-
-case class UserNotFound(id: Int) extends Exception {
-  override def getMessage: String = s"User(${id.toString}) not found."
-}
 
 case class UserWithOffers(
   id: Int,
@@ -35,23 +30,33 @@ trait UserRepository {
 }
 
 trait UserDomain {
+  val repository: UserRepository
+  val partnerSystem: PartnerDomain
+
+  def getUsers(): List[User]
   def getUser(id: Int): Option[User]
   def getUserWithOffers(id: Int): Option[UserWithOffers]
 }
 
-case class UserService(
-    userRepository: UserRepository,
-    offerSystem: OffersDomain) extends UserDomain {
+case class UserSystem(
+    repository: UserRepository,
+    partnerSystem: PartnerDomain) extends UserDomain {
+
+  def getUsers(): List[User] = {
+    repository.loadUsers()
+  }
 
   def getUser(id: Int): Option[User] = {
-    userRepository.getUser(id)
+    repository.getUser(id)
   }
 
   def getUserWithOffers(id: Int): Option[UserWithOffers] = {
-    val user: User = userRepository.getUser(id) match {
+    val user: User = repository.getUser(id) match {
       case Some(u) => u
       case None => throw UserNotFound(id)
     }
-    Some(UserWithOffers(user.id, user.name, user.creditScore, user.outstandingLoanAmount, List()))
+
+    val offers = partnerSystem.getOffers
+    Some(UserWithOffers(user.id, user.name, user.creditScore, user.outstandingLoanAmount, offers))
   }
 }

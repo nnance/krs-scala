@@ -5,8 +5,6 @@ import com.twitter.finagle.Thrift
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
 
-import krs.infrastructure.InfrastructureModule
-
 object UserServer extends TwitterServer with ServiceModule {
   val service = userApi()
   val userService: Counter = statsReceiver.counter("userService")

@@ -1,7 +1,6 @@
 package krs.infrastructure
 
 import org.scalatest._
-import krs.infrastructure._
 
 class UserRepositoryFSSpec extends FlatSpec with Matchers {
   val fixtureData = "./fixtures/users.json"

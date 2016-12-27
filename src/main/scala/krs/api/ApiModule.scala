@@ -1,8 +1,8 @@
 package krs.api
 
-import krs.domain.{ DomainModule }
+import krs.domain.{ DomainModule, UserSystem, PartnerSystem }
 
 trait ApiModule { this: DomainModule =>
-  val userApi: UserApi = new UserApi(userRepository)
-  val partnerApi: PartnerApi = new PartnerApi(partnerRepository)
+  val partnerSystem = PartnerSystem(partnerRepository)
+  val userApi = UserSystem(userRepository, partnerSystem)
 }
