@@ -5,7 +5,7 @@ import krs.api.{ ApiModule }
 
 trait InfrastructureModule { this: ApiModule with DomainModule =>
 
-  override val userRepository: UserRepository = new UserRepositoryFS("./fixtures/users.json")
-  override val partnerRepository: PartnerRepository = new PartnerRepositoryFS("./fixtures/offers.json")
+  override val userRepository = UserRepositoryMemory()
+  override val partnerRepository = PartnerRepositoryMemory()
 
 }

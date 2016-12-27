@@ -1,7 +1,6 @@
 package krs.domain
 
 import org.scalatest._
-import krs.domain._
 import krs.domain.OfferSystem._
 
 class CreditScoreRangeSpec extends FlatSpec with Matchers {
@@ -66,7 +65,7 @@ class FilterEligibleOffersSpec extends FlatSpec with Matchers {
   // Offer05, Offer06, offer10 should be the only thing that user04 is eligible for
   val user04 = new User(1, "TestUser04", 765, 0.00)
 
-  val offers = Seq(
+  val offers = List(
     CreditCard("Offer01", Range(500, 700)),
     CreditCard("Offer02", Range(550, 700)),
     CreditCard("Offer03", Range(600, 700)),

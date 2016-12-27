@@ -31,7 +31,7 @@ trait OffersDomain {
     def isEligible(user: User, rule: T): Boolean
   }
 
-  def filterEligible(user: User, offers: Seq[Offer]): Seq[Offer]
+  def filterEligible(user: User, offers: List[Offer]): List[Offer]
 }
 
 object OfferSystem extends OffersDomain {
@@ -60,7 +60,7 @@ object OfferSystem extends OffersDomain {
     }
   }
 
-  def filterEligible(user: User, offers: Seq[Offer]): Seq[Offer] = {
+  def filterEligible(user: User, offers: List[Offer]): List[Offer] = {
     offers.filter((offer: Offer) => isEligible(user, offer))
   }
 }

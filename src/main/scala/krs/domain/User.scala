@@ -26,7 +26,9 @@ case class UserWithOffers(
 
 trait UserRepository {
   def loadUsers(): List[User]
-  def getUser(id: Int): Option[User]
+  def getUser(id: Int): Option[User] = {
+    loadUsers().find((user) => user.id == id)
+  }
 }
 
 trait UserDomain {
@@ -56,7 +58,8 @@ case class UserSystem(
       case None => throw UserNotFound(id)
     }
 
-    val offers = partnerSystem.getOffers
-    Some(UserWithOffers(user.id, user.name, user.creditScore, user.outstandingLoanAmount, offers))
+    val allOffers = partnerSystem.getOffers
+    val filteredOffers = OfferSystem.filterEligible(user, allOffers)
+    Some(UserWithOffers(user.id, user.name, user.creditScore, user.outstandingLoanAmount, filteredOffers))
   }
 }

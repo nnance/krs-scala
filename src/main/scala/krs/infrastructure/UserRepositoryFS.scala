@@ -21,9 +21,4 @@ case class UserRepositoryFS(val fileName: String) extends FileSystem with UserRe
     }
     userCache
   }
-
-  def getUser(id: Int): Option[User] = {
-    loadUsers().find((user) => user.id == id)
-  }
-
 }
