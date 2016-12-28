@@ -8,7 +8,7 @@ struct User {
   2: required string name;
   3: required i32 creditScore;
   4: optional double outstandingLoanAmount;
-  5: optional list<PartnerOffer> offers;
+  5: optional list<Partner.PartnerOffer> offers;
 }
 
 service UserService {
