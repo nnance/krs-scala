@@ -5,7 +5,7 @@ sealed trait UserTrait {
   val name: String
   val creditScore: Int
   val outstandingLoanAmount: Double
-  var offers: Option[List[Offer]]
+  val offers: Option[List[Offer]]
 }
 
 case class UserNotFound(id: Int) extends Exception {
@@ -16,7 +16,8 @@ case class User(
   id: Int,
   name: String,
   creditScore: Int,
-  outstandingLoanAmount: Double) extends UserTrait
+  outstandingLoanAmount: Double,
+  offers: Option[List[Offer]] = None) extends UserTrait
 
 trait UserRepository {
   def loadUsers(): List[User]
@@ -53,8 +54,8 @@ case class UserSystem(
     }
 
     val allOffers = partnerSystem.getOffers
-    val result = User(user.id, user.name, user.creditScore, user.outstandingLoanAmount)
-    result.offers = Option(OfferSystem.filterEligible(user, allOffers))
+    val filteredOffers = OfferSystem.filterEligible(user, allOffers)
+    val result = User(user.id, user.name, user.creditScore, user.outstandingLoanAmount, Option(filteredOffers))
     Some(result)
   }
 }

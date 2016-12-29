@@ -11,14 +11,14 @@ class UserServer(userRepository: UserRepository, partnerSystem: PartnerSystem) {
     new UserService[Future] {
       def getUsers() = {
         val serviceUsers: List[User] = users.getUsers().map((u) => {
-          User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount))
+          User(u.id, u.name, u.creditScore, Option(u.outstandingLoanAmount))
         })
         Future.value(serviceUsers)
       }
 
       def getUser(id: Int) = {
         val user: User = users.getUser(id) match {
-          case Some(u) => User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount))
+          case Some(u) => User(u.id, u.name, u.creditScore, Option(u.outstandingLoanAmount))
           case None => throw UserNotFound(id)
         }
         Future.value(user)
@@ -27,7 +27,7 @@ class UserServer(userRepository: UserRepository, partnerSystem: PartnerSystem) {
       def getUserWithOffers(id: Int) = {
         val user: User = users.getUserWithOffers(id) match {
           case Some(u) =>
-            User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount), Option(u.offers.map(PartnerUtil.convertOffer)))
+            User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount), u.offers.map(o => o.map(PartnerUtil.convertOffer)))
           case None =>
             throw UserNotFound(id)
         }
