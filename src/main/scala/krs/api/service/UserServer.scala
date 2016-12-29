@@ -3,9 +3,9 @@ package krs.api.service
 import com.twitter.util.{ Future }
 import krs.thriftscala.{ User, UserService }
 
-import krs.domain.{ UserRepository, UserSystem, UserNotFound, PartnerSystem }
+import krs.domain.{ UserRepository, UserSystem, UserNotFound, PartnerDomain }
 
-class UserServer(userRepository: UserRepository, partnerSystem: PartnerSystem) {
+class UserServer(userRepository: UserRepository, partnerSystem: PartnerDomain) {
   def apply() = {
     val users = UserSystem(userRepository, partnerSystem)
     new UserService[Future] {
@@ -25,13 +25,15 @@ class UserServer(userRepository: UserRepository, partnerSystem: PartnerSystem) {
       }
 
       def getUserWithOffers(id: Int) = {
-        val user: User = users.getUserWithOffers(id) match {
-          case Some(u) =>
-            User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount), u.offers.map(o => o.map(PartnerUtil.convertOffer)))
-          case None =>
-            throw UserNotFound(id)
-        }
-        Future.value(user)
+        users.getUserWithOffers(id).map(u => {
+          val user = u match {
+            case Some(u) =>
+              User(u.id, u.name, u.creditScore, Some(u.outstandingLoanAmount), u.offers.map(o => o.map(PartnerUtil.convertOffer)))
+            case None =>
+              throw UserNotFound(id)
+          }
+          user
+        })
       }
     }
   }

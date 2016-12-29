@@ -1,16 +1,18 @@
 package krs.domain
 
+import com.twitter.util.{ Future }
+
 trait PartnerRepository {
   def loadOffers(): List[Offer]
 }
 
 trait PartnerDomain {
-  val repository: PartnerRepository
-  def getOffers: List[Offer]
+  def getOffers: Future[List[Offer]]
 }
 
 case class PartnerSystem(repository: PartnerRepository) extends PartnerDomain {
-  def getOffers(): List[Offer] = {
-    repository.loadOffers()
+  def getOffers(): Future[List[Offer]] = {
+    val offers = repository.loadOffers()
+    Future.value(offers)
   }
 }

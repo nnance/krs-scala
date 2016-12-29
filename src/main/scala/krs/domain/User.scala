@@ -1,5 +1,7 @@
 package krs.domain
 
+import com.twitter.util.{ Future }
+
 sealed trait UserTrait {
   val id: Int
   val name: String
@@ -32,7 +34,7 @@ trait UserDomain {
 
   def getUsers(): List[User]
   def getUser(id: Int): Option[User]
-  def getUserWithOffers(id: Int): Option[User]
+  def getUserWithOffers(id: Int): Future[Option[User]]
 }
 
 case class UserSystem(
@@ -47,15 +49,16 @@ case class UserSystem(
     repository.getUser(id)
   }
 
-  def getUserWithOffers(id: Int): Option[User] = {
+  def getUserWithOffers(id: Int): Future[Option[User]] = {
     val user: User = repository.getUser(id) match {
       case Some(u) => u
       case None => throw UserNotFound(id)
     }
 
-    val allOffers = partnerSystem.getOffers
-    val filteredOffers = OfferSystem.filterEligible(user, allOffers)
-    val result = User(user.id, user.name, user.creditScore, user.outstandingLoanAmount, Option(filteredOffers))
-    Some(result)
+    partnerSystem.getOffers.map(allOffers => {
+      val filteredOffers = OfferSystem.filterEligible(user, allOffers)
+      val result = User(user.id, user.name, user.creditScore, user.outstandingLoanAmount, Option(filteredOffers))
+      Some(result)
+    })
   }
 }
