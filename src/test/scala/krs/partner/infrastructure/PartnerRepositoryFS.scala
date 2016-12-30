@@ -1,4 +1,4 @@
-package krs.infrastructure
+package krs.partner.infrastructure
 
 import org.scalatest._
 
