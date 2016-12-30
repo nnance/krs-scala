@@ -32,25 +32,20 @@ object PersonalLoanSerializable extends Serializable[PersonalLoan] {
 
 case class PartnerRepositoryFS(val fileName: String) extends FileSystem with PartnerRepository {
 
-  var cache: List[Offer] = List()
-
   def loadOffers(): List[Offer] = {
-    if (cache.length == 0) {
-      val source = readFile(fileName)
-      val json = parse(source)
-      val offers = for {
-        JArray(items) <- json
-        JObject(offers) <- items
-      } yield offers
+    val source = readFile(fileName)
+    val json = parse(source)
+    val offers = for {
+      JArray(items) <- json
+      JObject(offers) <- items
+    } yield offers
 
-      def deserialize(offer: List[(String, JValue)]): Option[Offer] = offer(0)._1 match {
-        case "creditCard" => Option(CreditCardSerializable.deserialize(offer(0)._2))
-        case "personalLoan" => Option(PersonalLoanSerializable.deserialize(offer(0)._2))
-        case _ => None
-      }
-      cache = offers.map(deserialize).flatten
+    def deserialize(offer: List[(String, JValue)]): Option[Offer] = offer(0)._1 match {
+      case "creditCard" => Option(CreditCardSerializable.deserialize(offer(0)._2))
+      case "personalLoan" => Option(PersonalLoanSerializable.deserialize(offer(0)._2))
+      case _ => None
     }
-    cache
+    offers.map(deserialize).flatten
   }
 
 }
