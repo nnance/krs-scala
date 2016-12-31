@@ -4,17 +4,21 @@ import krs.user.domain._
 import krs.partner.domain.{ Offer }
 
 case class UserWithOffers(
-  user: Option[User],
+  user: User,
   offers: List[Offer])
 
-case class UserApi(repository: UserRepository, partnerModule: krs.partner.api.ApiModule) {
+case class UserApi(repository: UserRepository, partnerApi: krs.partner.api.PartnerApi) {
   def getUser(id: Int): Option[User] = {
     UserSystem(repository).getUser(id)
   }
 
-  def getUserWithOffers(id: Int): UserWithOffers = {
-    val user = UserSystem(repository).getUser(id)
-    val offers = partnerModule.partnerApi.getOffers(user.get.creditScore)
-    UserWithOffers(user, offers)
+  def getUserWithOffers(id: Int): Option[UserWithOffers] = {
+    UserSystem(repository).getUser(id) match {
+      case Some(u) => {
+        val offers = partnerApi.getOffers(u.creditScore)
+        Option(UserWithOffers(u, offers))
+      }
+      case None => None
+    }
   }
 }

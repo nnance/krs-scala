@@ -31,7 +31,7 @@ sbt 'runMain krs.partner.service.PartnerServer'
 Starting the User Service
 
 ```sh
-sbt 'runMain krs.service.UserServer -admin.port=:9991'
+sbt 'runMain krs.user.service.UserServer -admin.port=:9991'
 ```
 
 Starting the API Service
