@@ -1,9 +1,11 @@
 package krs.user.infrastructure
 
-import krs.user.domain._
+import krs.user.api._
+import krs.partner.{ PartnerModule }
 
-trait InfrastructureModule { this: DomainModule =>
+trait InfrastructureModule { this: ApiModule =>
 
-  override val repository = UserRepositoryMemory()
+  val repository = UserRepositoryMemory()
+  val partnerModule = PartnerModule
 
 }
