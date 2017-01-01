@@ -1,19 +1,18 @@
-package krs.api
+package krs.rest
 
 import com.twitter.app.Flag
 import com.twitter.finagle.{ Http, Service }
 import com.twitter.finagle.http.{ Request, Response }
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
-
 import io.finch._
 import io.finch.circe._
+import io.circe.generic.auto._
+import com.twitter.util.Await
 
-import com.twitter.util.{ Await }
-
-object APIService extends OfferResponseEncoders {
+object APIService {
   val api: Service[Request, Response] = (
-    OfferAPI.getOffers
+    PartnerAPI.getOffers :+: UserAPI.getUser
   ).toServiceAs[Application.Json]
 }
 

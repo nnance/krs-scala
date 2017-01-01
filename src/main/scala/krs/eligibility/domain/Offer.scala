@@ -1,30 +1,7 @@
-package krs
+package krs.eligibility.domain
 
-// our Offer ADT. This is basically a choice type. An offer can be either
-// a credit card or a personal loan. the "sealed" keyword basically ensures
-// only classes in this file can extend the offer trait. Basically this says
-// if we were to add a new offer to the system the ADT (and everywhere that
-// uses the ADT) needs to be modified to take into account the new requirement.
-sealed trait Offer {
-  val provider: String
-  val creditScoreRange: Range
-}
-
-case class CreditCard(
-    providerName: String,
-    scoreRange: Range) extends Offer {
-  val provider = providerName
-  val creditScoreRange = scoreRange
-}
-
-case class PersonalLoan(
-    providerName: String,
-    scoreRange: Range,
-    val maxLoanAmount: Double,
-    val term: Long) extends Offer {
-  val provider = providerName
-  val creditScoreRange = scoreRange
-}
+import krs.user.domain.{ User }
+import krs.partner.domain.{ Offer, CreditCard, PersonalLoan }
 
 // Here is our ADT for what an eligibility rule is. Each rule can be one of
 // the following choices (max loan amount is x, credit score range is min/max)
@@ -36,9 +13,6 @@ trait OffersDomain {
   sealed trait EligibilityRule[T] {
     def isEligible(user: User, rule: T): Boolean
   }
-
-  def isEligible(user: User, offer: Offer): Boolean
-  def filterEligible(user: User, offers: Seq[Offer]): Seq[Offer]
 }
 
 object OfferSystem extends OffersDomain {
@@ -65,9 +39,5 @@ object OfferSystem extends OffersDomain {
           isEligible(user, MaxLoanAmount(pl.maxLoanAmount))
       }
     }
-  }
-
-  def filterEligible(user: User, offers: Seq[Offer]): Seq[Offer] = {
-    offers.filter((offer: Offer) => isEligible(user, offer))
   }
 }
