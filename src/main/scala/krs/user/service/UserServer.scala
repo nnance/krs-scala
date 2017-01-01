@@ -5,13 +5,12 @@ import com.twitter.finagle.Thrift
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
 
-import krs.user.infrastructure.InfrastructureModule
 import krs.user.api.ApiModule
 import krs.user.domain.DomainModule
 
 object UserServer
     extends TwitterServer
-    with InfrastructureModule
+    with ServiceModule
     with ApiModule
     with DomainModule {
 

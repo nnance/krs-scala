@@ -1,10 +1,16 @@
 package krs.partner.api
 
+import com.twitter.util.{ Future }
 import krs.partner.domain._
 
-case class PartnerApi(repository: PartnerRepository) {
-  def getOffers(creditScore: Int): List[Offer] = {
+trait PartnerApiTrait {
+  def getOffers(creditScore: Int): Future[Seq[Offer]]
+}
+
+case class PartnerApi(repository: PartnerRepository) extends PartnerApiTrait {
+  def getOffers(creditScore: Int): Future[Seq[Offer]] = {
     val offers = repository.loadOffers
-    PartnerSystem().filterOffers(offers, creditScore)
+    val filteredOffers = PartnerSystem().filterOffers(offers, creditScore)
+    Future.value(filteredOffers)
   }
 }

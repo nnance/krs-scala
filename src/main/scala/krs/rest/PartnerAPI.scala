@@ -14,7 +14,7 @@ object PartnerAPI {
   def convertOffer(o: PartnerOffer) =
     Offer(o.provider, o.minimumCreditScore.getOrElse(0), o.maximumCreditScore.getOrElse(0))
 
-  def getOffers: Endpoint[Seq[Offer]] = get("offers") {
-    client.getOffers().map(resp => Ok(resp.offers.map(convertOffer)))
+  def getOffers: Endpoint[Seq[Offer]] = get("offers" :: int) { creditScore: Int =>
+    client.getOffers(creditScore).map(resp => Ok(resp.offers.map(convertOffer)))
   }
 }

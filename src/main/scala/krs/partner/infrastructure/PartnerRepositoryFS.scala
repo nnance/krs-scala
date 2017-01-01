@@ -1,6 +1,6 @@
 package krs.partner.infrastructure
 
-import krs.infrastructure.{ FileSystem }
+import krs.common.{ FileSystem }
 import krs.partner.domain._
 
 import org.json4s._

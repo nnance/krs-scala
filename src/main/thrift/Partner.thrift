@@ -7,10 +7,10 @@ struct PartnerOffer {
   3: optional i32 maximumCreditScore;
 }
 
-struct OfferResponse {
+struct PartnerResponse {
   1: required list<PartnerOffer> offers;
 }
 
 service PartnerService {
-  OfferResponse getOffers();
+  PartnerResponse getOffers(1: i32 creditScore);
 }

@@ -1,4 +1,4 @@
-package krs.infrastructure
+package krs.common
 
 import scala.io.Source
 

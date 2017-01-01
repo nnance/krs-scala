@@ -12,7 +12,7 @@ import com.twitter.util.Await
 
 object APIService {
   val api: Service[Request, Response] = (
-    PartnerAPI.getOffers :+: UserAPI.getUsers :+: UserAPI.getUser
+    PartnerAPI.getOffers :+: UserAPI.getUser
   ).toServiceAs[Application.Json]
 }
 

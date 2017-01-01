@@ -1,6 +1,6 @@
 package krs.user.infrastructure
 
-import krs.infrastructure.{ FileSystem }
+import krs.common.{ FileSystem }
 import krs.user.domain._
 
 import io.circe._
