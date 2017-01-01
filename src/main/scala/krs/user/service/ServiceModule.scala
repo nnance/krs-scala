@@ -5,7 +5,7 @@ import krs.user.infrastructure._
 
 trait ServiceModule { this: ApiModule =>
 
-  val repository = UserRepositoryMemory()
+  val repository = UserRepositoryFS("./fixtures/users.json")
   val partnerRepository = PartnerClient()
   val eligibilityApi = new krs.eligibility.infrastructure.Injector().eligibilityApi
 

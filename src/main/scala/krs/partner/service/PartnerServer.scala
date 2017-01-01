@@ -11,7 +11,7 @@ import krs.partner.domain.DomainModule
 
 object PartnerServer
     extends TwitterServer
-    with InfrastructureModule
+    with ServiceModule
     with ApiModule
     with DomainModule {
 
