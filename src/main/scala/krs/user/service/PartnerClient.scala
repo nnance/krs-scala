@@ -4,10 +4,10 @@ import com.twitter.util.{ Future }
 import com.twitter.finagle.Thrift
 
 import krs.partner.domain.{ Offer, CreditCard }
-import krs.partner.api.{ PartnerApiTrait }
+import krs.partner.api.{ PartnerApi }
 import krs.thriftscala.{ PartnerService, PartnerOffer }
 
-case class PartnerClient() extends PartnerApiTrait {
+case class PartnerClient() extends PartnerApi {
   val client: PartnerService.FutureIface =
     Thrift.client.newIface[PartnerService.FutureIface]("localhost:8081", classOf[PartnerService.FutureIface])
 

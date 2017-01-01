@@ -4,6 +4,6 @@ import krs.partner.domain._
 
 trait InfrastructureModule { this: DomainModule =>
 
-  override val partnerRepository = PartnerRepositoryMemory()
+  val partnerRepository = PartnerRepositoryMemory()
 
 }

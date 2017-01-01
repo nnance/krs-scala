@@ -4,12 +4,18 @@ import com.twitter.util.{ Future }
 
 import krs.user.domain._
 import krs.partner.domain.{ Offer }
+import krs.partner.api.{ PartnerApi }
+import krs.eligibility.api.{ EligibilityApi }
 
 case class UserWithOffers(
   user: User,
   offers: Seq[Offer])
 
-case class UserApi(repository: UserRepository, partnerApi: krs.partner.api.PartnerApiTrait) {
+case class UserApi(
+    repository: UserRepository,
+    partnerRepository: PartnerApi,
+    eligibilitySystem: EligibilityApi) {
+
   def getUser(id: Int): Option[User] = {
     UserSystem(repository).getUser(id)
   }
@@ -17,9 +23,10 @@ case class UserApi(repository: UserRepository, partnerApi: krs.partner.api.Partn
   def getUserWithOffers(id: Int): Future[Option[UserWithOffers]] = {
     UserSystem(repository).getUser(id) match {
       case Some(u) => {
-        partnerApi.getOffers(u.creditScore).map(offers =>
-          Option(UserWithOffers(u, offers))
-        )
+        for {
+          offers <- partnerRepository.getOffers(u.creditScore)
+          eligible <- eligibilitySystem.filterEligible(u, offers)
+        } yield Option(UserWithOffers(u, eligible))
       }
       case None => Future.value(None)
     }

@@ -15,8 +15,8 @@ class UserApiSpec extends FlatSpec with Matchers {
     user.isDefined should be(false)
   }
 
-  "getUserWithOffers for id 1" should "have 4 offers" in new TestModule {
+  "getUserWithOffers for id 2" should "have 2 offers" in new TestModule {
     val user = Await.result(userApi.getUserWithOffers(2))
-    user.get.offers.length should be(3)
+    user.get.offers.length should be(2)
   }
 }
