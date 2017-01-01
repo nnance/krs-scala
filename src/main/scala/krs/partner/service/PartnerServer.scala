@@ -20,6 +20,10 @@ object PartnerServer
   val partnerService = statsReceiver.counter("partnerService")
 
   def main(): Unit = {
+
+    val conf = com.typesafe.config.ConfigFactory.load()
+    val host = conf.getString("krs.partner.host")
+
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
       .serveIface("localhost:8081", serviceImpl)

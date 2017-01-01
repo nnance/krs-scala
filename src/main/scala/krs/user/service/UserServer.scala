@@ -19,9 +19,12 @@ object UserServer
   val userService = statsReceiver.counter("userService")
 
   def main(): Unit = {
+    val conf = com.typesafe.config.ConfigFactory.load()
+    val host = conf.getString("krs.user.host")
+
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface("localhost:8082", userImpl)
+      .serveIface(host, userImpl)
 
     onExit { server.close() }
     Await.ready(server)
