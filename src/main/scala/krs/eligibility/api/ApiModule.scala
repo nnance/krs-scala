@@ -1,7 +1,5 @@
 package krs.eligibility.api
 
-import krs.eligibility.domain.{ DomainModule }
-
-trait ApiModule { this: DomainModule =>
+trait ApiModule {
   val eligibilityApi = EligibilityApiImpl()
 }
