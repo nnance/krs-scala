@@ -17,8 +17,7 @@ changes to the software architecture.
 
 ### Data
 
-The json data used for validation is included in the [data.json](./fixtures/data.json) file in the fixtures folder. This data
-should be deserialized and processed by type.  
+The json data used for validation is included in the [data.json](./fixtures/data.json) file in the fixtures folder. This data should be deserialized and processed by type.  
 
 ## Getting started
 

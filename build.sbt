@@ -8,14 +8,14 @@ scalariformSettings
 
 ensimeIgnoreMissingDirectories := true
 
+val finchVersion = "0.11.0-M4"
 val circeVersion = "0.5.3"
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.0",
   "org.scalatest" %% "scalatest" % "3.0.0" % "test",
-  "org.json4s" %% "json4s-native" % "3.5.0",
-  "com.github.finagle" %% "finch-core" % "0.11.0-M4",
-  "com.github.finagle" %% "finch-circe" % "0.11.0-M4",
+  "com.github.finagle" %% "finch-core" % finchVersion,
+  "com.github.finagle" %% "finch-circe" % finchVersion,
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,

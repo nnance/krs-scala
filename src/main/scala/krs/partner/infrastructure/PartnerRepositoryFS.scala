@@ -3,49 +3,43 @@ package krs.partner.infrastructure
 import krs.common.{ FileSystem }
 import krs.partner.domain._
 
-import org.json4s._
-import org.json4s.native.JsonMethods._
+import io.circe._
+import io.circe.syntax._
+import io.circe.generic.auto._
+import io.circe.parser._
 
-sealed trait Serializable[T] {
-  def deserialize(json: JValue): T
-}
+case class JsonOffer(
+  id: Int,
+  provider: String,
+  minimumCreditScore: Int,
+  maximumCreditScore: Int,
+  maximumAmount: Option[Double],
+  term: Option[Int])
 
-object CreditCardSerializable extends Serializable[CreditCard] {
-  def deserialize(json: JValue): CreditCard = {
-    val JString(provider) = json \ "provider"
-    val JInt(minScore) = json \ "minimumCreditScore"
-    val JInt(maxScore) = json \ "maximumCreditScore"
-    CreditCard(provider, Range(minScore.toInt, maxScore.toInt))
-  }
-}
-
-object PersonalLoanSerializable extends Serializable[PersonalLoan] {
-  def deserialize(json: JValue): PersonalLoan = {
-    val JString(provider) = json \ "provider"
-    val JInt(minScore) = json \ "minimumCreditScore"
-    val JInt(maxScore) = json \ "maximumCreditScore"
-    val JInt(term) = json \ "term"
-    val JInt(maxAmt) = json \ "maximumAmount"
-    PersonalLoan(provider, Range(minScore.toInt, maxScore.toInt), maxAmt.toDouble, term.toLong)
-  }
-}
+case class OfferType(value: String)
 
 case class PartnerRepositoryFS(val fileName: String) extends FileSystem with PartnerRepository {
 
-  def loadOffers(): List[Offer] = {
-    val source = readFile(fileName)
-    val json = parse(source)
-    val offers = for {
-      JArray(items) <- json
-      JObject(offers) <- items
-    } yield offers
+  implicit val fooKeyDecoder = new KeyDecoder[OfferType] {
+    override def apply(key: String): Option[OfferType] = Some(OfferType(key))
+  }
 
-    def deserialize(offer: List[(String, JValue)]): Option[Offer] = offer(0)._1 match {
-      case "creditCard" => Option(CreditCardSerializable.deserialize(offer(0)._2))
-      case "personalLoan" => Option(PersonalLoanSerializable.deserialize(offer(0)._2))
-      case _ => None
-    }
-    offers.map(deserialize).flatten
+  def readJsonOffer(source: String): List[Map[OfferType, JsonOffer]] = {
+    decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
+  }
+
+  def loadOffers(): List[Offer] = {
+    val json = readFile(fileName)
+    readJsonOffer(json).flatMap(m => m.keySet.map(k => {
+      k.value match {
+        case "creditCard" =>
+          m.get(k).map(o => CreditCard(o.provider, Range(o.minimumCreditScore, o.maximumCreditScore)))
+        case "personalLoan" =>
+          m.get(k).map(o => PersonalLoan(o.provider, Range(o.minimumCreditScore, o.maximumCreditScore), o.maximumAmount.getOrElse(0.0), o.term.getOrElse(0).toLong))
+        case _ =>
+          None
+      }
+    })).flatten
   }
 
 }
