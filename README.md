@@ -1,19 +1,17 @@
 # krs-scala
 
-The goal of the system is to serve offers to users. To be developed
-in a stepwise manner. The system should include unit tests that validate each
-of the requirements mentioned below.  The system should be designed in such a manor
-that new types of offers can be easily added to the pipeline without significant
-changes to the software architecture.
+The goal of the system is to serve offers to users. Using the Ports and Adaptors pattern to illustrate how a service can be easily developed and tested in isolation before being deployed as microservices.
+
+The project is a POC that supporting the concepts outlined in the associated [BLOG](blog/POST.md) post.
 
 ### Requirements
 
-* Step 1: Return all of the offers from each service to the user.
-* Step 2: Only return offers from each service where the user's credit score is between (inclusive) the offers minimum and maximum score.
-* Step 3: Serve all relevant offers from step 2 and only the auto loan offers to the user if the following conditions are true:
+* Return offers filtered by credit score.
+* Return user with eligible offers based on the following rules:
   * (a) The user's credit score is within the offer's range
   * (b) The user's current outstanding loan is less than or equal to the auto loan offer's high limit (maximumAmount).
-* Step 4: Deserialize the sample data in an asynchronous manor and service the appropriate offers from step 3.
+* Design the eligibility system to be easily extended with new rules.
+* Deserialize the sample data in an asynchronous manor and service the appropriate offers from step
 
 ### Data
 
@@ -24,7 +22,7 @@ The json data used for validation is included in the [data.json](./fixtures/data
 Starting the Partner Service
 
 ```sh
-sbt 'runMain krs.partner.service.PartnerServer'
+sbt 'runMain krs.partner.service.PartnerServer -admin.port=:9990'
 ```
 
 Starting the User Service
@@ -41,14 +39,21 @@ sbt 'runMain krs.rest.APIServer -admin.port=:9992'
 
 ## Testing
 
-Confirming API Service
+Confirm the services are working with the REST services:
 
+Getting offers by credit score
 ```sh
-curl http://localhost:8080/offers
+curl http://localhost:8080/offers/550
 ```
+
+Getting user with offers
+```sh
+curl http://localhost:8080/user/1
+```
+
 
 Load Testing
 ```sh
 brew install wrk
-wrk -t12 -c400 -d30s http://127.0.0.1:8080/offers
+wrk -t12 -c400 -d30s http://127.0.0.1:8080/user/2
 ```
