@@ -1,7 +1,5 @@
 package krs.user.domain
 
-import com.twitter.util.{ Future }
-
 sealed trait UserTrait {
   val id: Int
   val name: String
