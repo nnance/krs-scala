@@ -167,8 +167,16 @@ This allows the service dependencies to be replaced with Finagle clients that co
 
 #### Finch
 
-One drawback of using an RPC framework is validation via http commands with curl or a similar client.  
+One drawback of using an RPC framework is validation via http commands with curl or a similar client.  I implemented a simple REST service using the Finch framework to support using curl to query the services.
+
+```scala
+def getUser: Endpoint[User] = get("user" :: int) { id: Int =>
+  client.getUserWithOffers(id).map(u => Ok(convertUser(u)))
+}
+```
+
+Checkout the [README.md](../README.md) associated with the project for starting the services and sending requests.
 
 ## Outcome
 
-As you review the project implementation notice how the microservice framework stack (Finagle & Thrift) doesn't show
+As you review the project implementation you will notice how the external dependencies (file system, microservice framework, testing) are injected into the runtime and the core implementation is pure Scala.
