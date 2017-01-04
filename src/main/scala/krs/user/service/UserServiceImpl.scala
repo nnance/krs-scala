@@ -11,11 +11,12 @@ object UserServiceImpl {
   def apply(api: UserApi) = {
     new UserService[Future] {
       def getUser(id: Int) = {
-        val user: User = api.getUser(id) match {
-          case Some(u) => User(u.id, u.name, u.creditScore, Option(u.outstandingLoanAmount))
-          case None => throw UserNotFound(id)
-        }
-        Future.value(user)
+        api.getUser(id).map(user =>
+          user match {
+            case Some(u) => User(u.id, u.name, u.creditScore, Option(u.outstandingLoanAmount))
+            case None => throw UserNotFound(id)
+          }
+        )
       }
 
       def getUserWithOffers(id: Int) = {

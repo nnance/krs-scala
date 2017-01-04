@@ -26,7 +26,7 @@ object PartnerServer
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface("localhost:8081", serviceImpl)
+      .serveIface(host, serviceImpl)
 
     onExit { server.close() }
     Await.ready(server)

@@ -21,16 +21,13 @@ case class UserApi(
   }
 
   def getUserWithOffers(id: Int): Future[Option[UserWithOffers]] = {
-    UserSystem(repository).getUser(id).map(user => {
+    UserSystem(repository).getUser(id).flatMap(user => {
       user match {
-        case Some(u) => {
-          partnerRepository.getOffers(u.creditScore).map(offers => {
-            eligibilitySystem.filterEligible(u, offers).map(eligible => {
-              Option(UserWithOffers(u, eligible))
-            })
-          })
-        }
-        case None => Future.value(None)
+        case Some(u) =>
+          partnerRepository.getOffers(u.creditScore).flatMap(offers =>
+            eligibilitySystem.filterEligible(u, offers).map(eligible =>
+              Some(UserWithOffers(u, eligible))))
+        case _ => Future.value(None)
       }
     })
   }

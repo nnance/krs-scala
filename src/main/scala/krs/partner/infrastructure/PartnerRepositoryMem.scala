@@ -1,10 +1,12 @@
 package krs.partner.infrastructure
 
+import com.twitter.util.{ Future }
+
 import krs.partner.domain._
 
 case class PartnerRepositoryMemory() extends PartnerRepository {
-  def loadOffers(): List[Offer] = {
-    List(
+  def loadOffers(): Future[List[Offer]] = {
+    Future.value(List(
       CreditCard("Offer01", Range(500, 700)),
       CreditCard("Offer02", Range(550, 700)),
       CreditCard("Offer03", Range(600, 700)),
@@ -15,6 +17,6 @@ case class PartnerRepositoryMemory() extends PartnerRepository {
       PersonalLoan("Offer08", Range(550, 700), 0.00, 12),
       PersonalLoan("Offer09", Range(500, 700), 100.00, 12),
       PersonalLoan("Offer10", Range(750, 770), 100.00, 12)
-    )
+    ))
   }
 }
