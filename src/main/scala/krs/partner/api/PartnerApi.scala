@@ -9,8 +9,8 @@ trait PartnerApi {
 
 case class PartnerApiImpl(repository: PartnerRepository) extends PartnerApi {
   def getOffers(creditScore: Int): Future[Seq[Offer]] = {
-    val offers = repository.loadOffers
-    val filteredOffers = PartnerSystem().filterOffers(offers, creditScore)
-    Future.value(filteredOffers)
+    repository.loadOffers.map(offers => {
+      PartnerSystem().filterOffers(offers, creditScore)
+    })
   }
 }

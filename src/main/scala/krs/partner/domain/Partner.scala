@@ -1,5 +1,7 @@
 package krs.partner.domain
 
+import com.twitter.util.{ Future, FuturePool }
+
 sealed trait Offer {
   val provider: String
   val creditScoreRange: Range
@@ -16,7 +18,7 @@ case class PersonalLoan(
   val term: Long) extends Offer
 
 trait PartnerRepository {
-  def loadOffers(): List[Offer]
+  def loadOffers(): Future[List[Offer]]
 }
 
 trait PartnerDomain {

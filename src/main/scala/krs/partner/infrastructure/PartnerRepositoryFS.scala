@@ -1,12 +1,14 @@
 package krs.partner.infrastructure
 
-import krs.common.{ FileSystem }
-import krs.partner.domain._
+import com.twitter.util.{ Future, FuturePool }
 
 import io.circe._
 import io.circe.syntax._
 import io.circe.generic.auto._
 import io.circe.parser._
+
+import krs.common.{ FileSystem }
+import krs.partner.domain._
 
 case class JsonOffer(
   id: Int,
@@ -28,18 +30,19 @@ case class PartnerRepositoryFS(val fileName: String) extends FileSystem with Par
     decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
   }
 
-  def loadOffers(): List[Offer] = {
-    val json = readFile(fileName)
-    readJsonOffer(json).flatMap(m => m.keySet.map(k => {
-      k.value match {
-        case "creditCard" =>
-          m.get(k).map(o => CreditCard(o.provider, Range(o.minimumCreditScore, o.maximumCreditScore)))
-        case "personalLoan" =>
-          m.get(k).map(o => PersonalLoan(o.provider, Range(o.minimumCreditScore, o.maximumCreditScore), o.maximumAmount.getOrElse(0.0), o.term.getOrElse(0).toLong))
-        case _ =>
-          None
-      }
-    })).flatten
+  def loadOffers(): Future[List[Offer]] = {
+    readFile(fileName).map(json => {
+      readJsonOffer(json).flatMap(m => m.keySet.map(k => {
+        k.value match {
+          case "creditCard" =>
+            m.get(k).map(o => CreditCard(o.provider, Range(o.minimumCreditScore, o.maximumCreditScore)))
+          case "personalLoan" =>
+            m.get(k).map(o => PersonalLoan(o.provider, Range(o.minimumCreditScore, o.maximumCreditScore), o.maximumAmount.getOrElse(0.0), o.term.getOrElse(0).toLong))
+          case _ =>
+            None
+        }
+      })).flatten
+    })
   }
 
 }

@@ -1,11 +1,13 @@
 package krs.user.infrastructure
 
-import krs.common.{ FileSystem }
-import krs.user.domain._
+import com.twitter.util.{ Future }
 
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
+
+import krs.common.{ FileSystem }
+import krs.user.domain._
 
 case class JsonUser(
   id: Int,
@@ -19,9 +21,9 @@ case class UserRepositoryFS(val fileName: String) extends FileSystem with UserRe
     decode[List[JsonUser]](source).getOrElse(List())
   }
 
-  def loadUsers(): List[User] = {
-    readJsonUser(readFile(fileName)).map(u => {
-      User(u.id, u.name, u.creditScore, u.outstandingLoanAmount)
+  def loadUsers(): Future[List[User]] = {
+    readFile(fileName).map(json => {
+      readJsonUser(json).map(u => User(u.id, u.name, u.creditScore, u.outstandingLoanAmount))
     })
   }
 }
