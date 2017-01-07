@@ -15,7 +15,7 @@ case class JsonUser(
 
 case class UserRepositoryFS(val fileName: String) extends FileSystem with UserRepository {
 
-  def readJsonUser(source: String): List[JsonUser] = {
+  private def readJsonUser(source: String): List[JsonUser] = {
     decode[List[JsonUser]](source).getOrElse(List())
   }
 

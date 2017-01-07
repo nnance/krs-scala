@@ -16,28 +16,25 @@ trait OffersDomain {
 }
 
 object OfferSystem extends OffersDomain {
-  implicit object CreditScoreRangeRule extends EligibilityRule[CreditScoreRange] {
+  private implicit object CreditScoreRangeRule extends EligibilityRule[CreditScoreRange] {
     def isEligible(user: User, rule: CreditScoreRange): Boolean =
       user.creditScore >= rule.range.min && user.creditScore <= rule.range.max
   }
 
-  implicit object MaxLoanAmountRule extends EligibilityRule[MaxLoanAmount] {
+  private implicit object MaxLoanAmountRule extends EligibilityRule[MaxLoanAmount] {
     def isEligible(user: User, rule: MaxLoanAmount): Boolean =
       user.outstandingLoanAmount < rule.amount
   }
 
-  def isEligible[T](user: User, t: T)(implicit rule: EligibilityRule[T]) =
+  private def isEligible[T](user: User, t: T)(implicit rule: EligibilityRule[T]) =
     rule.isEligible(user, t)
 
-  def isEligible(user: User, offer: Offer): Boolean = {
+  def isEligible(user: User, offer: Offer): Boolean =
     offer match {
-      case cc: CreditCard => {
+      case cc: CreditCard =>
         isEligible(user, CreditScoreRange(cc.creditScoreRange))
-      }
-      case pl: PersonalLoan => {
+      case pl: PersonalLoan =>
         isEligible(user, CreditScoreRange(pl.creditScoreRange)) &&
           isEligible(user, MaxLoanAmount(pl.maxLoanAmount))
-      }
     }
-  }
 }

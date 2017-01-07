@@ -11,8 +11,6 @@ trait EligibilityApi {
 }
 
 case class EligibilityApiImpl() extends EligibilityApi {
-  def filterEligible(user: User, offers: Seq[Offer]): Future[Seq[Offer]] = {
-    val filteredOffers = offers.filter(offer => OfferSystem.isEligible(user, offer))
-    Future.value(filteredOffers)
-  }
+  def filterEligible(user: User, offers: Seq[Offer]): Future[Seq[Offer]] =
+    Future.value(offers.filter(offer => OfferSystem.isEligible(user, offer)))
 }

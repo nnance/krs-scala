@@ -18,9 +18,11 @@ object APIService {
 
 object APIServer extends TwitterServer {
 
-  val port: Flag[Int] = flag("port", 8080, "TCP port for HTTP server")
+  private val conf = com.typesafe.config.ConfigFactory.load()
+  private val portConf = conf.getInt("krs.rest.port")
+  private val port: Flag[Int] = flag("port", portConf, "TCP port for HTTP server")
 
-  val api: Counter = statsReceiver.counter("api")
+  private val api: Counter = statsReceiver.counter("api")
 
   def main(): Unit = {
     log.info("Serving the Client application")

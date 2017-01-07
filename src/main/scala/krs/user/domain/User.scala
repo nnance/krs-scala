@@ -36,6 +36,6 @@ case class UserSystem(
   }
 
   def getUser(id: Int): Option[User] = {
-    repository.loadUsers().find((user) => user.id == id)
+    repository.loadUsers().find(_.id == id)
   }
 }

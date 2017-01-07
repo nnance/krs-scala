@@ -2,6 +2,7 @@ package krs.user.infrastructure
 
 import krs.user.domain._
 
+// scalastyle:off magic.number
 case class UserRepositoryMemory() extends UserRepository {
   def loadUsers(): List[User] = {
     List(

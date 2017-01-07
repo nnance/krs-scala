@@ -24,9 +24,6 @@ trait PartnerDomain {
 }
 
 case class PartnerSystem() extends PartnerDomain {
-  def filterOffers(offers: List[Offer], creditScore: Int): List[Offer] = {
-    offers.filter(
-      o => creditScore >= o.creditScoreRange.min && creditScore <= o.creditScoreRange.max
-    )
-  }
+  def filterOffers(offers: List[Offer], creditScore: Int): List[Offer] =
+    offers.filter(o => creditScore >= o.creditScoreRange.min && creditScore <= o.creditScoreRange.max)
 }

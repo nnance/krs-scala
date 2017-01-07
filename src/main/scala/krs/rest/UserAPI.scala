@@ -12,16 +12,16 @@ case class User(
   offers: Option[Seq[Offer]] = None)
 
 object UserAPI {
-  val conf = com.typesafe.config.ConfigFactory.load()
-  val host = conf.getString("krs.user.host")
+  private val conf = com.typesafe.config.ConfigFactory.load()
+  private val host = conf.getString("krs.user.host")
 
-  val client: UserService.FutureIface =
+  private val client: UserService.FutureIface =
     Thrift.client.newIface[UserService.FutureIface](host, classOf[UserService.FutureIface])
 
-  def convertOffer(o: krs.thriftscala.PartnerOffer) =
+  private def convertOffer(o: krs.thriftscala.PartnerOffer) =
     Offer(o.provider, o.minimumCreditScore.getOrElse(0), o.maximumCreditScore.getOrElse(0))
 
-  def convertUser(u: krs.thriftscala.User) =
+  private def convertUser(u: krs.thriftscala.User) =
     User(u.id, u.name, u.creditScore, u.offers.map(o => o.map(convertOffer)))
 
   def getUser: Endpoint[User] = get("user" :: int) { id: Int =>
