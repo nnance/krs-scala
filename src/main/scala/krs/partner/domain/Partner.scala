@@ -7,13 +7,15 @@ sealed trait Offer {
 
 case class CreditCard(
   provider: String,
-  creditScoreRange: Range) extends Offer
+  creditScoreRange: Range
+) extends Offer
 
 case class PersonalLoan(
   provider: String,
   creditScoreRange: Range,
   val maxLoanAmount: Double,
-  val term: Long) extends Offer
+  val term: Long
+) extends Offer
 
 trait PartnerRepository {
   def loadOffers(): List[Offer]

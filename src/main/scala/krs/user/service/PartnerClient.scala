@@ -1,11 +1,11 @@
 package krs.user.service
 
-import com.twitter.util.{ Future }
+import com.twitter.util.{Future}
 import com.twitter.finagle.Thrift
 
-import krs.partner.domain.{ Offer, CreditCard }
-import krs.partner.api.{ PartnerApi }
-import krs.thriftscala.{ PartnerService, PartnerOffer }
+import krs.partner.domain.{Offer, CreditCard}
+import krs.partner.api.{PartnerApi}
+import krs.thriftscala.{PartnerService, PartnerOffer}
 
 case class PartnerClient() extends PartnerApi {
   private val conf = com.typesafe.config.ConfigFactory.load()

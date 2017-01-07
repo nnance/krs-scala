@@ -1,7 +1,7 @@
 package krs.user.infrastructure
 
 import krs.user.api._
-import krs.partner.infrastructure.{ Injector }
+import krs.partner.infrastructure.{Injector}
 
 trait InfrastructureModule { this: ApiModule =>
 

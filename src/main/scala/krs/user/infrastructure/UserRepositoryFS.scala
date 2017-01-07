@@ -1,6 +1,6 @@
 package krs.user.infrastructure
 
-import krs.common.{ FileSystem }
+import krs.common.{FileSystem}
 import krs.user.domain._
 
 import io.circe._
@@ -11,7 +11,8 @@ case class JsonUser(
   id: Int,
   name: String,
   creditScore: Int,
-  outstandingLoanAmount: Double)
+  outstandingLoanAmount: Double
+)
 
 case class UserRepositoryFS(val fileName: String) extends FileSystem with UserRepository {
 

@@ -3,13 +3,14 @@ package krs.rest
 import com.twitter.finagle.Thrift
 
 import io.finch._
-import krs.thriftscala.{ UserService }
+import krs.thriftscala.{UserService}
 
 case class User(
   id: Int,
   name: String,
   creditScore: Int,
-  offers: Option[Seq[Offer]] = None)
+  offers: Option[Seq[Offer]] = None
+)
 
 object UserAPI {
   private val conf = com.typesafe.config.ConfigFactory.load()

@@ -1,6 +1,6 @@
 package krs.partner.api
 
-import com.twitter.util.{ Future }
+import com.twitter.util.{Future}
 import krs.partner.domain._
 
 trait PartnerApi {

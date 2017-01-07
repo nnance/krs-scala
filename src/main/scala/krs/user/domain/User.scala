@@ -15,7 +15,8 @@ case class User(
   id: Int,
   name: String,
   creditScore: Int,
-  outstandingLoanAmount: Double) extends UserTrait
+  outstandingLoanAmount: Double
+) extends UserTrait
 
 trait UserRepository {
   def loadUsers(): List[User]
@@ -28,8 +29,7 @@ trait UserDomain {
   def getUser(id: Int): Option[User]
 }
 
-case class UserSystem(
-    repository: UserRepository) extends UserDomain {
+case class UserSystem(repository: UserRepository) extends UserDomain {
 
   def getUsers(): List[User] = {
     repository.loadUsers()

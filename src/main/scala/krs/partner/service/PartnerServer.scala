@@ -1,6 +1,6 @@
 package krs.partner.service
 
-import com.twitter.util.{ Await }
+import com.twitter.util.{Await}
 import com.twitter.finagle.Thrift
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer

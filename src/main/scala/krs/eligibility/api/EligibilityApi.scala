@@ -1,8 +1,8 @@
 package krs.eligibility.api
 
-import com.twitter.util.{ Future }
-import krs.user.domain.{ User }
-import krs.partner.domain.{ Offer }
+import com.twitter.util.{Future}
+import krs.user.domain.{User}
+import krs.partner.domain.{Offer}
 
 import krs.eligibility.domain._
 
