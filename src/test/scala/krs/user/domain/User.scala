@@ -15,22 +15,15 @@ object TestRepository extends UserRepository {
 
 class UserSystemSpec extends FlatSpec with Matchers {
 
-  "getUsers" should "have 4 items" in {
+  "find for id 2" should "have TestUser02 for the second user" in {
     val api = UserSystem(TestRepository)
-    val users = api.getUsers()
-    users.length should be(4)
-    users(0).name should be("TestUser01")
-  }
-
-  "getUser for id 2" should "have TestUser02 for the second user" in {
-    val api = UserSystem(TestRepository)
-    val user = api.getUser(2)
+    val user = api.find(2)
     user.get.name should be("TestUser02")
   }
 
-  "getUser for id 6" should "be undefined" in {
+  "find for id 6" should "be undefined" in {
     val api = UserSystem(TestRepository)
-    val user = api.getUser(6)
+    val user = api.find(6)
     user.isDefined should be(false)
   }
 }

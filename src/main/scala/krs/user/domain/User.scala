@@ -19,23 +19,18 @@ case class User(
 ) extends UserTrait
 
 trait UserRepository {
-  def loadUsers(): List[User]
+  def loadUsers: List[User]
 }
 
 trait UserDomain {
   val repository: UserRepository
 
-  def getUsers(): List[User]
-  def getUser(id: Int): Option[User]
+  def find: Long => Option[User]
 }
 
 case class UserSystem(repository: UserRepository) extends UserDomain {
 
-  def getUsers(): List[User] = {
-    repository.loadUsers()
-  }
+  private def findFromRepo: UserRepository => Long => Option[User] = repo => id => repo.loadUsers.find(_.id == id)
+  def find: Long => Option[User] = findFromRepo(repository)
 
-  def getUser(id: Int): Option[User] = {
-    repository.loadUsers().find(_.id == id)
-  }
 }

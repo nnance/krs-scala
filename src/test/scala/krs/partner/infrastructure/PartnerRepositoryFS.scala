@@ -11,8 +11,7 @@ class PartnerFSSpec extends FlatSpec with Matchers {
   }
 
   "loadOffers" should "have 7 items from CapitalOne" in {
-    val repo = new PartnerRepositoryFS(fixtureData)
-    val offers = repo.loadOffers()
+    val offers = PartnerRepositoryFS(fixtureData).loadOffers
     offers.length should be(7)
     offers(0).provider should be("CapitalOne")
   }

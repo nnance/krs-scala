@@ -28,7 +28,7 @@ case class PartnerRepositoryFS(val fileName: String) extends FileSystem with Par
   private def readJsonOffer(source: String): List[Map[OfferType, JsonOffer]] =
     decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
 
-  def loadOffers(): List[Offer] = {
+  def loadOffers: List[Offer] = {
     val json = readFile(fileName)
     readJsonOffer(json).flatMap(m => m.keySet.map(k =>
       k.value match {

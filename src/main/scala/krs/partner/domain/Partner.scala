@@ -18,7 +18,7 @@ case class PersonalLoan(
 ) extends Offer
 
 trait PartnerRepository {
-  def loadOffers(): List[Offer]
+  def loadOffers: List[Offer]
 }
 
 trait PartnerDomain {

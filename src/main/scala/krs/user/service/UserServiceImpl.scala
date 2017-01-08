@@ -10,8 +10,8 @@ import krs.user.domain.{UserNotFound}
 object UserServiceImpl {
   def apply(api: UserApi): UserService[Future] =
     new UserService[Future] {
-      def getUser(id: Int) = {
-        val user: User = api.getUser(id) match {
+      def find(id: Int) = {
+        val user: User = api.find(id) match {
           case Some(u) => User(u.id, u.name, u.creditScore, Option(u.outstandingLoanAmount))
           case None => throw UserNotFound(id)
         }

@@ -18,12 +18,12 @@ case class UserApi(
     eligibilitySystem: EligibilityApi
 ) {
 
-  def getUser(id: Int): Option[User] = {
-    UserSystem(repository).getUser(id)
+  def find(id: Int): Option[User] = {
+    UserSystem(repository).find(id)
   }
 
   def getUserWithOffers(id: Int): Future[Option[UserWithOffers]] = {
-    UserSystem(repository).getUser(id) match {
+    UserSystem(repository).find(id) match {
       case Some(u) => {
         for {
           offers <- partnerRepository.getOffers(u.creditScore)

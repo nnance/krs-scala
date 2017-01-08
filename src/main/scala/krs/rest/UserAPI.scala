@@ -25,7 +25,7 @@ object UserAPI {
   private def convertUser(u: krs.thriftscala.User) =
     User(u.id, u.name, u.creditScore, u.offers.map(o => o.map(convertOffer)))
 
-  def getUser: Endpoint[User] = get("user" :: int) { id: Int =>
+  def find: Endpoint[User] = get("user" :: int) { id: Int =>
     client.getUserWithOffers(id).map(u => Ok(convertUser(u)))
   }
 }

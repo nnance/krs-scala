@@ -12,6 +12,6 @@ struct User {
 }
 
 service UserService {
-  User getUser(1:i32 id);
+  User find(1:i32 id);
   User getUserWithOffers(1:i32 id);
 }
