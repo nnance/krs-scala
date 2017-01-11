@@ -2,6 +2,7 @@ package fps
 
 object UserDomain {
   type UserRepository = List[User]
+  type UserFilter = Long => Option[User]
 
   case class User(
     id: Int,
@@ -14,10 +15,16 @@ object UserDomain {
 trait UserSystem {
   import UserDomain._
 
-  def find: Long => Option[User]
+  def find(id: Long, f: UserFilter): Option[User] = f(id)
 }
 
-object InMemoryUserRepository extends UserSystem {
+object UserInMemory extends UserSystem {
+  import UserDomain._
+
+  def find: Long => Option[User] = n => InMemoryUserRepository.findFromRepo(n)
+}
+
+object InMemoryUserRepository {
   import UserDomain._
   val users = User(1, "TestUser01", 500, 100.00) ::
     User(2, "TestUser02", 765, 100.00) ::
@@ -25,14 +32,12 @@ object InMemoryUserRepository extends UserSystem {
     User(4, "TestUser04", 765, 0.00) ::
     Nil
 
-  def findFromRepo: UserRepository => Long => Option[User] = repo => id => repo.find(_.id == id)
-  def find: Long => Option[User] = findFromRepo(users)
+  def findFromRepo: UserFilter = id => users.find(_.id == id)
 }
 
-object FileUserRepository extends UserSystem {
+object FileUserRepository {
   import UserDomain._
   var users = List.empty[User]
 
-  def findFromRepo: UserRepository => Long => Option[User] = repo => id => repo.find(_.id == id)
-  def find: Long => Option[User] = findFromRepo(users)
+  def findFromRepo: UserFilter = id => users.find(_.id == id)
 }

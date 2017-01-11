@@ -16,8 +16,11 @@ object EmailSystem {
     senders => email => senders.contains(email.sender)
   val notSentByAnyOf: Set[String] => EmailFilter =
     senders => email => !senders.contains(email.sender)
-  val minimumSize: Int => EmailFilter = n => email => email.text.size >= n
-  val maximumSize: Int => EmailFilter = n => email => email.text.size <= n
+
+  type SizeChecker = Int => Boolean
+  val emailSize: SizeChecker => EmailFilter = f => email => f(email.text.size)
+  val minimumSize: Int => EmailFilter = n => emailSize(_ >= n)
+  val maximumSize: Int => EmailFilter = n => emailSize(_ <= n)
 
 }
 
