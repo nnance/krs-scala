@@ -1,7 +1,7 @@
 package krs.user.api
 
 import org.scalatest._
-import com.twitter.util.{ Await }
+import com.twitter.util.{Await}
 import krs.user.TestModule
 
 class UserApiSpec extends FlatSpec with Matchers {

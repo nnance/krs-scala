@@ -1,8 +1,8 @@
 package krs.user.api
 
-import krs.user.domain.{ DomainModule }
-import krs.partner.api.{ PartnerApi }
-import krs.eligibility.api.{ EligibilityApi }
+import krs.user.domain.{DomainModule}
+import krs.partner.api.{PartnerApi}
+import krs.eligibility.api.{EligibilityApi}
 
 trait ApiModule { this: DomainModule =>
   val partnerRepository: PartnerApi

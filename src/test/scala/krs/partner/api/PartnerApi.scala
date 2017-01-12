@@ -1,6 +1,6 @@
 package krs.partner.api
 
-import com.twitter.util.{ Await }
+import com.twitter.util.{Await}
 import org.scalatest._
 import krs.partner.TestModule
 

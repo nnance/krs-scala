@@ -3,7 +3,7 @@ package krs.rest
 import com.twitter.finagle.Thrift
 
 import io.finch._
-import krs.thriftscala.{ PartnerService, PartnerOffer }
+import krs.thriftscala.{PartnerService, PartnerOffer}
 
 case class Offer(provider: String, minScore: Int, maxScore: Int)
 

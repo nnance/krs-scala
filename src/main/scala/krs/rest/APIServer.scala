@@ -1,8 +1,8 @@
 package krs.rest
 
 import com.twitter.app.Flag
-import com.twitter.finagle.{ Http, Service }
-import com.twitter.finagle.http.{ Request, Response }
+import com.twitter.finagle.{Http, Service}
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
 import io.finch._
