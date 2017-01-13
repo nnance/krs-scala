@@ -1,4 +1,4 @@
-package krs.partner.domain
+package krs.partner
 
 sealed trait Offer {
   val provider: String
@@ -28,4 +28,8 @@ trait PartnerDomain {
 case class PartnerSystem() extends PartnerDomain {
   def filterOffers(offers: List[Offer], creditScore: Int): List[Offer] =
     offers.filter(o => creditScore >= o.creditScoreRange.min && creditScore <= o.creditScoreRange.max)
+}
+
+trait DomainModule {
+  def partnerRepository: PartnerRepository
 }

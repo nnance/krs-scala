@@ -1,7 +1,7 @@
 package krs.eligibility
 
 import krs.user.{User}
-import krs.partner.domain.{Offer, CreditCard, PersonalLoan}
+import krs.partner.{Offer, CreditCard, PersonalLoan}
 
 // Here is our ADT for what an eligibility rule is. Each rule can be one of
 // the following choices (max loan amount is x, credit score range is min/max)

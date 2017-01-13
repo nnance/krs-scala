@@ -3,8 +3,8 @@ package krs.user.service
 import com.twitter.util.{Future}
 import com.twitter.finagle.Thrift
 
-import krs.partner.domain.{Offer, CreditCard}
-import krs.partner.api.{PartnerApi}
+import krs.partner.{Offer, CreditCard}
+import krs.partner.{PartnerApi}
 import krs.thriftscala.{PartnerService, PartnerOffer}
 
 case class PartnerClient() extends PartnerApi {

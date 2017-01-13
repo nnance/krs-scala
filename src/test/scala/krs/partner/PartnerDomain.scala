@@ -1,4 +1,4 @@
-package krs.partner.domain
+package krs.partner
 
 import org.scalatest._
 

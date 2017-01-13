@@ -1,7 +1,6 @@
 package krs.user
 
 import krs.common.{FileSystem}
-import krs.partner.infrastructure.{Injector}
 
 import io.circe._
 import io.circe.generic.auto._
@@ -42,6 +41,8 @@ case class UserRepositoryFS(val fileName: String) extends FileSystem with UserRe
 trait InfrastructureModule { this: ApiModule =>
 
   val repository = UserRepositoryMemory()
-  val partnerRepository = new Injector().partnerApi
+  val partnerRepository = new krs.partner.Injector().partnerApi
   val eligibilityApi = krs.eligibility.EligibilityApi
 }
+
+class Injector extends InfrastructureModule with ApiModule with DomainModule

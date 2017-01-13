@@ -2,7 +2,7 @@ package krs.eligibility
 
 import org.scalatest._
 import krs.user.{User}
-import krs.partner.domain.{CreditCard, PersonalLoan}
+import krs.partner.{CreditCard, PersonalLoan}
 
 class CreditCardOfferSpec extends FlatSpec with Matchers {
   val ccOffer = CreditCard("Chase", Range(500, 700))

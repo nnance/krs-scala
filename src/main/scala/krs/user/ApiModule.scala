@@ -2,9 +2,9 @@ package krs.user
 
 import com.twitter.util.{Future}
 
-import krs.partner.api.{PartnerApi}
+import krs.partner.{PartnerApi}
 import krs.eligibility.{EligibilityApi}
-import krs.partner.domain.{Offer}
+import krs.partner.{Offer}
 
 case class UserWithOffers(
   user: User,
