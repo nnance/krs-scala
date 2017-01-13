@@ -7,41 +7,60 @@ import io.circe.parser._
 object InMemoryPartnerRepository {
   import PartnerDomain._
 
-  val offers = List(
-    CreditCard("Offer01", Range(500, 700)),
-    CreditCard("Offer02", Range(550, 700)),
-    CreditCard("Offer03", Range(600, 700)),
-    CreditCard("Offer04", Range(650, 700)),
-    CreditCard("Offer05", Range(700, 770)),
-    CreditCard("Offer06", Range(750, 770)),
-    PersonalLoan("Offer07", Range(500, 700), 0.00, 12),
-    PersonalLoan("Offer08", Range(550, 700), 0.00, 12),
-    PersonalLoan("Offer09", Range(500, 700), 100.00, 12),
-    PersonalLoan("Offer10", Range(750, 770), 100.00, 12)
-  )
-
-  def findFromRepo: UserFilter = id => users.find(_.id == id)
+  def getOffers = CreditCard("Offer01", Range(500, 700)) ::
+    CreditCard("Offer02", Range(550, 700)) ::
+    CreditCard("Offer03", Range(600, 700)) ::
+    CreditCard("Offer04", Range(650, 700)) ::
+    CreditCard("Offer05", Range(700, 770)) ::
+    CreditCard("Offer06", Range(750, 770)) ::
+    PersonalLoan("Offer07", Range(500, 700), 0.00, 12) ::
+    PersonalLoan("Offer08", Range(550, 700), 0.00, 12) ::
+    PersonalLoan("Offer09", Range(500, 700), 100.00, 12) ::
+    PersonalLoan("Offer10", Range(750, 770), 100.00, 12) ::
+    Nil
 }
 
-case class JsonUser(
+case class JsonOffer(
   id: Int,
-  name: String,
-  creditScore: Int,
-  outstandingLoanAmount: Double
+  provider: String,
+  minimumCreditScore: Int,
+  maximumCreditScore: Int,
+  maximumAmount: Option[Double],
+  term: Option[Int]
 )
 
-case class FileUserRepository(fileName: String) extends FileSystem {
-  import UserDomain._
+case class OfferType(value: String)
 
-  private def readJsonUser(source: String): List[JsonUser] = {
-    decode[List[JsonUser]](source).getOrElse(List())
+case class FilePartnerRepository(fileName: String) extends FileSystem {
+  import PartnerDomain._
+
+  private implicit val offerKeyDecoder = new KeyDecoder[OfferType] {
+    override def apply(key: String): Option[OfferType] = Some(OfferType(key))
   }
 
-  def loadUsers(): UserRepository = {
-    readJsonUser(readFile(fileName)).map(u => {
-      User(u.id, u.name, u.creditScore, u.outstandingLoanAmount)
-    })
-  }
+  private def readJsonOffer(source: String): List[Map[OfferType, JsonOffer]] =
+    decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
 
-  def findFromRepo: UserFilter = id => loadUsers.find(_.id == id)
+  def getOffers: List[Offer] = {
+    val json = readFile(fileName)
+    readJsonOffer(json).flatMap(m => m.keySet.map(k =>
+      k.value match {
+        case "creditCard" =>
+          m.get(k).map(o =>
+            CreditCard(
+              o.provider,
+              Range(o.minimumCreditScore, o.maximumCreditScore)
+            ))
+        case "personalLoan" =>
+          m.get(k).map(o =>
+            PersonalLoan(
+              o.provider,
+              Range(o.minimumCreditScore, o.maximumCreditScore),
+              o.maximumAmount.getOrElse(0.0),
+              o.term.getOrElse(0).toLong
+            ))
+        case _ =>
+          None
+      })).flatten
+  }
 }
