@@ -29,7 +29,9 @@ trait UserDomain {
   def getUser(id: Int): Option[User]
 }
 
-case class UserSystem(repository: UserRepository) extends UserDomain {
+case class UserSystem(
+    repository: UserRepository
+) extends UserDomain {
 
   def getUsers(): List[User] = {
     repository.loadUsers()
