@@ -1,11 +1,10 @@
-package krs.user.api
+package krs.user
 
 import com.twitter.util.{Future}
 
-import krs.user.domain._
-import krs.partner.domain.{Offer}
 import krs.partner.api.{PartnerApi}
 import krs.eligibility.api.{EligibilityApi}
+import krs.partner.domain.{Offer}
 
 case class UserWithOffers(
   user: User,
@@ -33,4 +32,10 @@ case class UserApi(
       case None => Future.value(None)
     }
   }
+}
+
+trait ApiModule { this: DomainModule =>
+  val partnerRepository: PartnerApi
+  val eligibilityApi: EligibilityApi
+  val userApi = UserApi(repository, partnerRepository, eligibilityApi)
 }

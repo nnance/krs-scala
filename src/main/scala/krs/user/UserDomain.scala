@@ -1,4 +1,4 @@
-package krs.user.domain
+package krs.user
 
 sealed trait UserTrait {
   val id: Int
@@ -40,4 +40,8 @@ case class UserSystem(
   def getUser(id: Int): Option[User] = {
     repository.loadUsers().find(_.id == id)
   }
+}
+
+trait DomainModule {
+  def repository: UserRepository
 }
