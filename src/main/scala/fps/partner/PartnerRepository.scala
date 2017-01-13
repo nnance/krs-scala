@@ -1,8 +1,10 @@
-package fps
+package fps.partner
 
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
+
+import fps.FileSystem
 
 object InMemoryPartnerRepository {
   import PartnerDomain._
