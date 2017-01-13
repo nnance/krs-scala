@@ -3,7 +3,7 @@ package krs.user
 import com.twitter.util.{Future}
 
 import krs.partner.api.{PartnerApi}
-import krs.eligibility.api.{EligibilityApi}
+import krs.eligibility.{EligibilityApi}
 import krs.partner.domain.{Offer}
 
 case class UserWithOffers(

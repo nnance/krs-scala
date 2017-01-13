@@ -1,12 +1,10 @@
-package krs.eligibility.api
+package krs.eligibility
 
 import org.scalatest._
 import com.twitter.util.{Await}
 
 import krs.user.{User}
 import krs.partner.domain.{CreditCard, PersonalLoan}
-
-import krs.eligibility.TestModule
 
 class FilterEligibleOffersSpec extends FlatSpec with Matchers {
   // Offer01 should be the only thing that user01 is eligible for
@@ -31,26 +29,26 @@ class FilterEligibleOffersSpec extends FlatSpec with Matchers {
     PersonalLoan("Offer10", Range(750, 770), 100.00, 12)
   )
 
-  "Offer eligibilityRules length" should "be 1 for low scoreband user" in new TestModule {
-    val eligibleOffers = Await.result(eligibilityApi.filterEligible(user01, offers))
+  "Offer eligibilityRules length" should "be 1 for low scoreband user" in {
+    val eligibleOffers = Await.result(EligibilityApi.filterEligible(user01, offers))
     eligibleOffers.size should be(1)
     eligibleOffers.head.provider should be("Offer01")
   }
 
-  "Offer eligibilityRules length" should "be 2 for high scoreband user" in new TestModule {
-    val eligibleOffers = Await.result(eligibilityApi.filterEligible(user02, offers))
+  "Offer eligibilityRules length" should "be 2 for high scoreband user" in {
+    val eligibleOffers = Await.result(EligibilityApi.filterEligible(user02, offers))
     eligibleOffers.size should be(2)
     eligibleOffers.head.provider should be("Offer05")
   }
 
-  "Offer eligibilityRules length" should "be 2 for no outstanding loans" in new TestModule {
-    val eligibleOffers = Await.result(eligibilityApi.filterEligible(user03, offers))
+  "Offer eligibilityRules length" should "be 2 for no outstanding loans" in {
+    val eligibleOffers = Await.result(EligibilityApi.filterEligible(user03, offers))
     eligibleOffers.size should be(2)
     eligibleOffers.head.provider should be("Offer01")
   }
 
-  "Offer eligibilityRules length" should "be 3 for no outstanding loans" in new TestModule {
-    val eligibleOffers = Await.result(eligibilityApi.filterEligible(user04, offers))
+  "Offer eligibilityRules length" should "be 3 for no outstanding loans" in {
+    val eligibleOffers = Await.result(EligibilityApi.filterEligible(user04, offers))
     eligibleOffers.size should be(3)
     eligibleOffers.head.provider should be("Offer05")
   }

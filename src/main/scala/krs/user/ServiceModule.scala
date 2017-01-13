@@ -61,5 +61,5 @@ trait ServiceModule { this: ApiModule =>
 
   val repository = UserRepositoryFS(userData)
   val partnerRepository = PartnerClient()
-  val eligibilityApi = new krs.eligibility.infrastructure.Injector().eligibilityApi
+  val eligibilityApi = krs.eligibility.EligibilityApi
 }

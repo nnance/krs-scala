@@ -1,4 +1,4 @@
-package krs.eligibility.domain
+package krs.eligibility
 
 import krs.user.{User}
 import krs.partner.domain.{Offer, CreditCard, PersonalLoan}
@@ -9,13 +9,13 @@ sealed trait Rule
 case class CreditScoreRange(val range: Range) extends Rule
 case class MaxLoanAmount(val amount: Double) extends Rule
 
-trait OffersDomain {
+trait EligibilityDomain {
   sealed trait EligibilityRule[T] {
     def isEligible(user: User, rule: T): Boolean
   }
 }
 
-object OfferSystem extends OffersDomain {
+object EligibilitySystem extends EligibilityDomain {
   private implicit object CreditScoreRangeRule extends EligibilityRule[CreditScoreRange] {
     def isEligible(user: User, rule: CreditScoreRange): Boolean =
       user.creditScore >= rule.range.min && user.creditScore <= rule.range.max

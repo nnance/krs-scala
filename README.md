@@ -34,7 +34,7 @@ sbt 'runMain krs.user.service.UserServer -admin.port=:9991'
 Starting the API Service
 
 ```sh
-sbt 'runMain krs.rest.APIServer -admin.port=:9992'
+sbt 'runMain rest.APIServer -admin.port=:9992'
 ```
 
 ## Testing
