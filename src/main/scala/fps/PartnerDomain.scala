@@ -42,6 +42,9 @@ trait PartnerSystem {
 object PartnerInMemory extends PartnerSystem {
   import PartnerDomain._
 
-  def getOffers(n: Int): List[Offer] =
-    InMemoryPartnerRepository.getOffers.filter(isEligible(_, n))
+  def getOffers: Int => List[Offer] = n =>
+    InMemoryPartnerRepository.getOffers.filter(o => o match {
+      case cc: CreditCard => isEligible(o.asInstanceOf[CreditCard], n)
+      case pl: PersonalLoan => isEligible(o.asInstanceOf[PersonalLoan], n)
+    })
 }
