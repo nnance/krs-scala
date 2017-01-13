@@ -1,7 +1,7 @@
 package krs.eligibility.domain
 
 import org.scalatest._
-import krs.user.domain.{User}
+import krs.user.{User}
 import krs.partner.domain.{CreditCard, PersonalLoan}
 
 import OfferSystem._

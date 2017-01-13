@@ -1,4 +1,4 @@
-package krs.user.infrastructure
+package krs.user
 
 import org.scalatest._
 

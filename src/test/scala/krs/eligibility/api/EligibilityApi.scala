@@ -3,7 +3,7 @@ package krs.eligibility.api
 import org.scalatest._
 import com.twitter.util.{Await}
 
-import krs.user.domain.{User}
+import krs.user.{User}
 import krs.partner.domain.{CreditCard, PersonalLoan}
 
 import krs.eligibility.TestModule

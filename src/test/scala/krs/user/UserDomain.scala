@@ -1,4 +1,4 @@
-package krs.user.domain
+package krs.user
 
 import org.scalatest._
 

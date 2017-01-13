@@ -1,8 +1,9 @@
-package krs.user.api
+package krs.user
 
 import org.scalatest._
 import com.twitter.util.{Await}
-import krs.user.TestModule
+
+trait TestModule extends InfrastructureModule with ApiModule with DomainModule
 
 class UserApiSpec extends FlatSpec with Matchers {
   "getUser for id 2" should "have a name TestUser02" in new TestModule {
