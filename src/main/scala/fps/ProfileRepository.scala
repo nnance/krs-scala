@@ -1,4 +1,4 @@
-package krs.user
+package fps
 
 /**
   * Created by nicknance on 1/18/17.
@@ -11,12 +11,12 @@ object ProfileDomain {
 trait ProfileSystem {
   import ProfileDomain._
 
-  type getProfile = Long => Option[Profile]
-  def getProfileForRepo: ProfileRepository => getProfile
+  def getProfile: Long => Option[Profile]
+  def getProfileForRepo: ProfileRepository => Long => Option[Profile]
 }
 
 case class ProfileApplication(repo: ProfileRepository) extends ProfileSystem {
-  let getProfile = this.getProfileForRepo(repo)
+  def getProfile = getProfileForRepo(repo)
 }
 
 trait ProfileRepository {
