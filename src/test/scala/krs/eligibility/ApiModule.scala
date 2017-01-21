@@ -29,25 +29,25 @@ class FilterEligibleOffersSpec extends FlatSpec with Matchers {
   )
 
   "Offer eligibilityRules length" should "be 1 for low scoreband user" in {
-    val eligibleOffers = Await.result(EligibilityApi.filterEligible(user01, offers))
+    val eligibleOffers = Await.result(EligibilitySystem.filterEligible(user01, offers))
     eligibleOffers.size should be(1)
     eligibleOffers.head.provider should be("Offer01")
   }
 
   "Offer eligibilityRules length" should "be 2 for high scoreband user" in {
-    val eligibleOffers = Await.result(EligibilityApi.filterEligible(user02, offers))
+    val eligibleOffers = Await.result(EligibilitySystem.filterEligible(user02, offers))
     eligibleOffers.size should be(2)
     eligibleOffers.head.provider should be("Offer05")
   }
 
   "Offer eligibilityRules length" should "be 2 for no outstanding loans" in {
-    val eligibleOffers = Await.result(EligibilityApi.filterEligible(user03, offers))
+    val eligibleOffers = Await.result(EligibilitySystem.filterEligible(user03, offers))
     eligibleOffers.size should be(2)
     eligibleOffers.head.provider should be("Offer01")
   }
 
   "Offer eligibilityRules length" should "be 3 for no outstanding loans" in {
-    val eligibleOffers = Await.result(EligibilityApi.filterEligible(user04, offers))
+    val eligibleOffers = Await.result(EligibilitySystem.filterEligible(user04, offers))
     eligibleOffers.size should be(3)
     eligibleOffers.head.provider should be("Offer05")
   }

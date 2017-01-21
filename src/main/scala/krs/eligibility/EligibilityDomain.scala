@@ -1,20 +1,30 @@
 package krs.eligibility
 
+import com.twitter.util.Future
 import krs.user.UserDomain.User
 
-// Here is our ADT for what an eligibility rule is. Each rule can be one of
-// the following choices (max loan amount is x, credit score range is min/max)
-sealed trait Rule
-case class CreditScoreRange(val range: Range) extends Rule
-case class MaxLoanAmount(val amount: Double) extends Rule
-
 trait EligibilityDomain {
+  // Here is our ADT for what an eligibility rule is. Each rule can be one of
+  // the following choices (max loan amount is x, credit score range is min/max)
+  sealed trait Rule
+  case class CreditScoreRange(val range: Range) extends Rule
+  case class MaxLoanAmount(val amount: Double) extends Rule
+
   sealed trait EligibilityRule[T] {
     def isEligible(user: User, rule: T): Boolean
   }
 }
 
-object EligibilitySystem extends EligibilityDomain {
+trait EligibilityApi {
+  import krs.partner.PartnerDomain._
+
+  def filterEligible(user: User, offers: Seq[Offer]): Future[Seq[Offer]]
+}
+
+
+object EligibilitySystem extends EligibilityDomain with EligibilityApi {
+  import krs.partner.PartnerDomain._
+
   private implicit object CreditScoreRangeRule extends EligibilityRule[CreditScoreRange] {
     def isEligible(user: User, rule: CreditScoreRange): Boolean =
       user.creditScore >= rule.range.min && user.creditScore <= rule.range.max
@@ -28,8 +38,6 @@ object EligibilitySystem extends EligibilityDomain {
   private def isEligible[T](user: User, t: T)(implicit rule: EligibilityRule[T]) =
     rule.isEligible(user, t)
 
-  import krs.partner.PartnerDomain._
-
   def isEligible(user: User, offer: Offer): Boolean =
     offer match {
       case cc: CreditCard =>
@@ -38,4 +46,7 @@ object EligibilitySystem extends EligibilityDomain {
         isEligible(user, CreditScoreRange(pl.creditScoreRange)) &&
           isEligible(user, MaxLoanAmount(pl.maxLoanAmount))
     }
+
+  def filterEligible(user: User, offers: Seq[Offer]): Future[Seq[Offer]] =
+    Future.value(offers.filter(offer => EligibilitySystem.isEligible(user, offer)))
 }

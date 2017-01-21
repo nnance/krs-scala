@@ -42,5 +42,5 @@ case class UserRepositoryFS(val fileName: String) extends FileSystem with UserRe
 trait InfrastructureModule { this: DomainModule =>
   val repository = UserRepositoryMemory()
   val partnerRepository = new krs.partner.Injector().partnerApi
-  val eligibilityApi = krs.eligibility.EligibilityApi
+  val eligibilityApi = krs.eligibility.EligibilitySystem
 }
