@@ -2,7 +2,7 @@ package krs.user
 
 import org.scalatest._
 
-class UserRepositoryFSSpec extends FlatSpec with Matchers {
+class UserFileRepositorySpec extends FlatSpec with Matchers {
   val fixtureData = "./fixtures/users.json"
 
   "loadUsers" should "have 4 items" in {
