@@ -3,7 +3,7 @@ package krs.eligibility
 import org.scalatest._
 import com.twitter.util.{Await}
 
-import krs.user.{User}
+import krs.user.UserDomain.{User}
 import krs.partner.{CreditCard, PersonalLoan}
 
 class FilterEligibleOffersSpec extends FlatSpec with Matchers {

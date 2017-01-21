@@ -1,37 +1,25 @@
 package krs.user
 
-sealed trait UserTrait {
-  val id: Int
-  val name: String
-  val creditScore: Int
-  val outstandingLoanAmount: Double
-}
+object UserDomain {
+  case class User(
+    id: Int,
+    name: String,
+    creditScore: Int,
+    outstandingLoanAmount: Double)
 
-case class UserNotFound(id: Int) extends Exception {
-  override def getMessage: String = s"User(${id.toString}) not found."
+  case class UserNotFound(id: Int) extends Exception {
+    override def getMessage: String = s"User(${id.toString}) not found."
+  }
 }
-
-case class User(
-  id: Int,
-  name: String,
-  creditScore: Int,
-  outstandingLoanAmount: Double
-) extends UserTrait
 
 trait UserRepository {
+  import UserDomain._
+
   def loadUsers(): List[User]
 }
 
-trait UserDomain {
-  val repository: UserRepository
-
-  def getUsers(): List[User]
-  def getUser(id: Int): Option[User]
-}
-
-case class UserSystem(
-    repository: UserRepository
-) extends UserDomain {
+case class UserSystem(repository: UserRepository) {
+  import UserDomain._
 
   def getUsers(): List[User] = {
     repository.loadUsers()

@@ -1,7 +1,7 @@
 package krs.eligibility
 
 import com.twitter.util.{Future}
-import krs.user.{User}
+import krs.user.UserDomain.{User}
 import krs.partner.{Offer}
 
 trait EligibilityApi {

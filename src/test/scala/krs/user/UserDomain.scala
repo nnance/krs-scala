@@ -2,6 +2,8 @@ package krs.user
 
 import org.scalatest._
 
+import UserDomain.{User}
+
 object TestRepository extends UserRepository {
   def loadUsers(): List[User] = {
     List(

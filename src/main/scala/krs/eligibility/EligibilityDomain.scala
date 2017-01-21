@@ -1,6 +1,6 @@
 package krs.eligibility
 
-import krs.user.{User}
+import krs.user.UserDomain.{User}
 import krs.partner.{Offer, CreditCard, PersonalLoan}
 
 // Here is our ADT for what an eligibility rule is. Each rule can be one of

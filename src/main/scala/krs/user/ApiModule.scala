@@ -2,9 +2,9 @@ package krs.user
 
 import com.twitter.util.{Future}
 
-import krs.partner.{PartnerApi}
+import UserDomain.{User}
+import krs.partner.{PartnerApi, Offer}
 import krs.eligibility.{EligibilityApi}
-import krs.partner.{Offer}
 
 case class UserWithOffers(
   user: User,
@@ -23,12 +23,11 @@ case class UserApi(
 
   def getUserWithOffers(id: Int): Future[Option[UserWithOffers]] = {
     UserSystem(repository).getUser(id) match {
-      case Some(u) => {
+      case Some(u) =>
         for {
           offers <- partnerRepository.getOffers(u.creditScore)
           eligible <- eligibilitySystem.filterEligible(u, offers)
         } yield Option(UserWithOffers(u, eligible))
-      }
       case None => Future.value(None)
     }
   }

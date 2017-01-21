@@ -33,12 +33,12 @@ object UserServer
 object UserServiceImpl {
   import krs.common.{PartnerUtil}
   import krs.thriftscala.{User, UserService}
-  import krs.user.{UserApi, UserNotFound}
+  import krs.user.UserDomain.{UserNotFound}
 
   def apply(api: UserApi): UserService[Future] =
     new UserService[Future] {
       def getUser(id: Int) = {
-        val user: User = api.getUser(id) match {
+        val user = api.getUser(id) match {
           case Some(u) => User(u.id, u.name, u.creditScore, Option(u.outstandingLoanAmount))
           case None => throw UserNotFound(id)
         }
