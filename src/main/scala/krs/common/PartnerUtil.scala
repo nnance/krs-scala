@@ -1,7 +1,7 @@
 package krs.common
 
-import krs.thriftscala.{PartnerOffer}
-import krs.partner.{Offer}
+import krs.partner.PartnerDomain.Offer
+import krs.thriftscala.PartnerOffer
 
 object PartnerUtil {
   def convertOffer(offer: Offer): PartnerOffer =

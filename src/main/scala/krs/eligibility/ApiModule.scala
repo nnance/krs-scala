@@ -1,8 +1,8 @@
 package krs.eligibility
 
-import com.twitter.util.{Future}
-import krs.user.UserDomain.{User}
-import krs.partner.{Offer}
+import com.twitter.util.Future
+import krs.partner.PartnerDomain.Offer
+import krs.user.UserDomain.User
 
 trait EligibilityApi {
   def filterEligible(user: User, offers: Seq[Offer]): Future[Seq[Offer]]

@@ -1,7 +1,6 @@
 package krs.eligibility
 
-import krs.user.UserDomain.{User}
-import krs.partner.{Offer, CreditCard, PersonalLoan}
+import krs.user.UserDomain.User
 
 // Here is our ADT for what an eligibility rule is. Each rule can be one of
 // the following choices (max loan amount is x, credit score range is min/max)
@@ -28,6 +27,8 @@ object EligibilitySystem extends EligibilityDomain {
 
   private def isEligible[T](user: User, t: T)(implicit rule: EligibilityRule[T]) =
     rule.isEligible(user, t)
+
+  import krs.partner.PartnerDomain._
 
   def isEligible(user: User, offer: Offer): Boolean =
     offer match {

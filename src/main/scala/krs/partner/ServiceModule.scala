@@ -1,14 +1,12 @@
 package krs.partner
 
-import com.twitter.util.{Await}
 import com.twitter.finagle.Thrift
-import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
+import com.twitter.util.Await
 
 object PartnerServer
     extends TwitterServer
     with ServiceModule
-    with ApiModule
     with DomainModule {
 
   val serviceImpl = PartnerServiceImpl(partnerApi)
@@ -30,11 +28,11 @@ object PartnerServer
 }
 
 object PartnerServiceImpl {
-  import com.twitter.util.{Future}
-  import krs.common.{PartnerUtil}
-  import krs.thriftscala.{PartnerService, PartnerResponse}
+  import com.twitter.util.Future
+  import krs.common.PartnerUtil
+  import krs.thriftscala.{PartnerResponse, PartnerService}
 
-  def apply(api: PartnerApi): PartnerService[Future] =
+  def apply(api: PartnerSystem): PartnerService[Future] =
     new PartnerService[Future] {
       def getOffers(creditScore: Int) =
         api.getOffers(creditScore).map(offers =>
@@ -42,7 +40,7 @@ object PartnerServiceImpl {
     }
 }
 
-trait ServiceModule { this: ApiModule =>
+trait ServiceModule { this: DomainModule =>
   private val conf = com.typesafe.config.ConfigFactory.load();
   private val partnerData = conf.getString("krs.partner.data")
 

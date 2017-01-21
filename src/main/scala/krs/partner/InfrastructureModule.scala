@@ -1,11 +1,9 @@
 package krs.partner
 
-import krs.common.{FileSystem}
-
 import io.circe._
-import io.circe.syntax._
 import io.circe.generic.auto._
 import io.circe.parser._
+import krs.common.FileSystem
 
 case class JsonOffer(
   id: Int,
@@ -19,6 +17,7 @@ case class JsonOffer(
 case class OfferType(value: String)
 
 case class PartnerRepositoryFS(val fileName: String) extends FileSystem with PartnerRepository {
+  import PartnerDomain._
 
   private implicit val offerKeyDecoder = new KeyDecoder[OfferType] {
     override def apply(key: String): Option[OfferType] = Some(OfferType(key))
@@ -54,6 +53,8 @@ case class PartnerRepositoryFS(val fileName: String) extends FileSystem with Par
 
 // scalastyle:off magic.number
 case class PartnerRepositoryMemory() extends PartnerRepository {
+  import PartnerDomain._
+
   def loadOffers(): List[Offer] =
     List(
       CreditCard("Offer01", Range(500, 700)),
@@ -70,8 +71,7 @@ case class PartnerRepositoryMemory() extends PartnerRepository {
 }
 
 trait InfrastructureModule { this: DomainModule =>
-
   val partnerRepository = PartnerRepositoryMemory()
 }
 
-class Injector extends InfrastructureModule with ApiModule with DomainModule
+class Injector extends InfrastructureModule with DomainModule

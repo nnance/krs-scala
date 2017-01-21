@@ -1,10 +1,9 @@
 package krs.eligibility
 
+import com.twitter.util.Await
+import krs.partner.PartnerDomain.{CreditCard, PersonalLoan}
+import krs.user.UserDomain.User
 import org.scalatest._
-import com.twitter.util.{Await}
-
-import krs.user.UserDomain.{User}
-import krs.partner.{CreditCard, PersonalLoan}
 
 class FilterEligibleOffersSpec extends FlatSpec with Matchers {
   // Offer01 should be the only thing that user01 is eligible for
