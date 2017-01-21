@@ -1,16 +1,13 @@
 package krs.user
 
-import com.twitter.util.{Future, Await}
 import com.twitter.finagle.Thrift
-import com.twitter.finagle.stats.Counter
 import com.twitter.server.TwitterServer
-
-import krs.user.service.{PartnerClient}
+import com.twitter.util.{Await, Future}
+import krs.user.service.PartnerClient
 
 object UserServer
     extends TwitterServer
     with ServiceModule
-    with ApiModule
     with DomainModule {
 
   val userImpl = UserServiceImpl(userApi)
@@ -31,11 +28,11 @@ object UserServer
 }
 
 object UserServiceImpl {
-  import krs.common.{PartnerUtil}
+  import krs.common.PartnerUtil
   import krs.thriftscala.{User, UserService}
-  import krs.user.UserDomain.{UserNotFound}
+  import krs.user.UserDomain.UserNotFound
 
-  def apply(api: UserApi): UserService[Future] =
+  def apply(api: UserSystem): UserService[Future] =
     new UserService[Future] {
       def getUser(id: Int) = {
         val user = api.getUser(id) match {
@@ -55,7 +52,7 @@ object UserServiceImpl {
     }
 }
 
-trait ServiceModule { this: ApiModule =>
+trait ServiceModule { this: DomainModule =>
   val conf = com.typesafe.config.ConfigFactory.load()
   val userData = conf.getString("krs.user.data")
 

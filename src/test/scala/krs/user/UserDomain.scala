@@ -1,38 +1,30 @@
 package krs.user
 
+import com.twitter.util.Await
 import org.scalatest._
 
-import UserDomain.{User}
-
-object TestRepository extends UserRepository {
-  def loadUsers(): List[User] = {
-    List(
-      new User(1, "TestUser01", 500, 100.00),
-      new User(2, "TestUser02", 765, 100.00),
-      new User(3, "TestUser03", 500, 0.00),
-      new User(4, "TestUser04", 765, 0.00)
-    )
-  }
-}
+trait TestModule extends InfrastructureModule with DomainModule
 
 class UserSystemSpec extends FlatSpec with Matchers {
 
-  "getUsers" should "have 4 items" in {
-    val api = UserSystem(TestRepository)
-    val users = api.getUsers()
+  "getUsers" should "have 4 items" in new TestModule {
+    val users = userApi.getUsers()
     users.length should be(4)
     users(0).name should be("TestUser01")
   }
 
-  "getUser for id 2" should "have TestUser02 for the second user" in {
-    val api = UserSystem(TestRepository)
-    val user = api.getUser(2)
+  "getUser for id 2" should "have TestUser02 for the second user" in new TestModule {
+    val user = userApi.getUser(2)
     user.get.name should be("TestUser02")
   }
 
-  "getUser for id 6" should "be undefined" in {
-    val api = UserSystem(TestRepository)
-    val user = api.getUser(6)
+  "getUser for id 6" should "be undefined" in new TestModule {
+    val user = userApi.getUser(6)
     user.isDefined should be(false)
+  }
+
+  "getUserWithOffers for id 2" should "have 2 offers" in new TestModule {
+    val user = Await.result(userApi.getUserWithOffers(2))
+    user.get.offers.length should be(2)
   }
 }

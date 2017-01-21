@@ -2,12 +2,12 @@ package krs.user
 
 import io.circe.generic.auto._
 import io.circe.parser._
-
-import krs.common.{FileSystem}
-import UserDomain.{User}
+import krs.common.FileSystem
 
 // scalastyle:off magic.number
 case class UserRepositoryMemory() extends UserRepository {
+  import UserDomain._
+
   def loadUsers(): List[User] = {
     List(
       new User(1, "TestUser01", 500, 100.00),
@@ -26,6 +26,7 @@ case class JsonUser(
 )
 
 case class UserRepositoryFS(val fileName: String) extends FileSystem with UserRepository {
+  import UserDomain._
 
   private def readJsonUser(source: String): List[JsonUser] = {
     decode[List[JsonUser]](source).getOrElse(List())
@@ -38,11 +39,8 @@ case class UserRepositoryFS(val fileName: String) extends FileSystem with UserRe
   }
 }
 
-trait InfrastructureModule { this: ApiModule =>
-
+trait InfrastructureModule { this: DomainModule =>
   val repository = UserRepositoryMemory()
   val partnerRepository = new krs.partner.Injector().partnerApi
   val eligibilityApi = krs.eligibility.EligibilityApi
 }
-
-class Injector extends InfrastructureModule with ApiModule with DomainModule
