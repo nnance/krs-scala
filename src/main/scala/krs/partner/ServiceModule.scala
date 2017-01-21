@@ -44,5 +44,5 @@ trait ServiceModule { this: DomainModule =>
   private val conf = com.typesafe.config.ConfigFactory.load();
   private val partnerData = conf.getString("krs.partner.data")
 
-  val partnerRepository = PartnerRepositoryFS(partnerData)
+  val partnerRepository = PartnerFileRepository.Repository(partnerData)
 }

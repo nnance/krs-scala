@@ -56,7 +56,7 @@ trait ServiceModule { this: DomainModule =>
   val conf = com.typesafe.config.ConfigFactory.load()
   val userData = conf.getString("krs.user.data")
 
-  val repository = UserRepositoryFS(userData)
+  val repository = UserFileRepository.Repository(userData)
   val partnerRepository = PartnerClient()
   val eligibilityApi = krs.eligibility.EligibilitySystem
 }

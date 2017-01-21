@@ -5,7 +5,7 @@ import io.circe.parser._
 import krs.common.FileSystem
 
 // scalastyle:off magic.number
-case class UserRepositoryMemory() extends UserRepository {
+case class UserMemoryRepository() extends UserRepository {
   import UserDomain._
 
   def loadUsers(): List[User] = {
@@ -18,29 +18,33 @@ case class UserRepositoryMemory() extends UserRepository {
   }
 }
 
-case class JsonUser(
-  id: Int,
-  name: String,
-  creditScore: Int,
-  outstandingLoanAmount: Double
-)
+object UserFileRepository {
+  case class JsonUser(
+                       id: Int,
+                       name: String,
+                       creditScore: Int,
+                       outstandingLoanAmount: Double
+                     )
 
-case class UserRepositoryFS(val fileName: String) extends FileSystem with UserRepository {
-  import UserDomain._
+  case class Repository(val fileName: String) extends FileSystem with UserRepository {
+    import UserDomain._
 
-  private def readJsonUser(source: String): List[JsonUser] = {
-    decode[List[JsonUser]](source).getOrElse(List())
+    private def readJsonUser(source: String): List[JsonUser] = {
+      decode[List[JsonUser]](source).getOrElse(List())
+    }
+
+    def loadUsers(): List[User] = {
+      readJsonUser(readFile(fileName)).map(u => {
+        User(u.id, u.name, u.creditScore, u.outstandingLoanAmount)
+      })
+    }
   }
 
-  def loadUsers(): List[User] = {
-    readJsonUser(readFile(fileName)).map(u => {
-      User(u.id, u.name, u.creditScore, u.outstandingLoanAmount)
-    })
-  }
+
 }
 
 trait InfrastructureModule { this: DomainModule =>
-  val repository = UserRepositoryMemory()
+  val repository = UserMemoryRepository()
   val partnerRepository = new krs.partner.Injector().partnerApi
   val eligibilityApi = krs.eligibility.EligibilitySystem
 }

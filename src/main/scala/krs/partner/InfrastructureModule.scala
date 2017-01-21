@@ -5,54 +5,56 @@ import io.circe.generic.auto._
 import io.circe.parser._
 import krs.common.FileSystem
 
-case class JsonOffer(
-  id: Int,
-  provider: String,
-  minimumCreditScore: Int,
-  maximumCreditScore: Int,
-  maximumAmount: Option[Double],
-  term: Option[Int]
-)
+object PartnerFileRepository {
+  case class JsonOffer(
+    id: Int,
+    provider: String,
+    minimumCreditScore: Int,
+    maximumCreditScore: Int,
+    maximumAmount: Option[Double],
+    term: Option[Int]
+  )
 
-case class OfferType(value: String)
+  case class OfferType(value: String)
 
-case class PartnerRepositoryFS(val fileName: String) extends FileSystem with PartnerRepository {
-  import PartnerDomain._
+  case class Repository(val fileName: String) extends FileSystem with PartnerRepository {
+    import PartnerDomain._
 
-  private implicit val offerKeyDecoder = new KeyDecoder[OfferType] {
-    override def apply(key: String): Option[OfferType] = Some(OfferType(key))
+    private implicit val offerKeyDecoder = new KeyDecoder[OfferType] {
+      override def apply(key: String): Option[OfferType] = Some(OfferType(key))
+    }
+
+    private def readJsonOffer(source: String): List[Map[OfferType, JsonOffer]] =
+      decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
+
+    def loadOffers(): List[Offer] = {
+      val json = readFile(fileName)
+      readJsonOffer(json).flatMap(m => m.keySet.map(k =>
+        k.value match {
+          case "creditCard" =>
+            m.get(k).map(o =>
+              CreditCard(
+                o.provider,
+                Range(o.minimumCreditScore, o.maximumCreditScore)
+              ))
+          case "personalLoan" =>
+            m.get(k).map(o =>
+              PersonalLoan(
+                o.provider,
+                Range(o.minimumCreditScore, o.maximumCreditScore),
+                o.maximumAmount.getOrElse(0.0),
+                o.term.getOrElse(0).toLong
+              ))
+          case _ =>
+            None
+        })).flatten
+    }
+
   }
-
-  private def readJsonOffer(source: String): List[Map[OfferType, JsonOffer]] =
-    decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
-
-  def loadOffers(): List[Offer] = {
-    val json = readFile(fileName)
-    readJsonOffer(json).flatMap(m => m.keySet.map(k =>
-      k.value match {
-        case "creditCard" =>
-          m.get(k).map(o =>
-            CreditCard(
-              o.provider,
-              Range(o.minimumCreditScore, o.maximumCreditScore)
-            ))
-        case "personalLoan" =>
-          m.get(k).map(o =>
-            PersonalLoan(
-              o.provider,
-              Range(o.minimumCreditScore, o.maximumCreditScore),
-              o.maximumAmount.getOrElse(0.0),
-              o.term.getOrElse(0).toLong
-            ))
-        case _ =>
-          None
-      })).flatten
-  }
-
 }
 
 // scalastyle:off magic.number
-case class PartnerRepositoryMemory() extends PartnerRepository {
+case class PartnerMemoryRepository() extends PartnerRepository {
   import PartnerDomain._
 
   def loadOffers(): List[Offer] =
@@ -71,7 +73,7 @@ case class PartnerRepositoryMemory() extends PartnerRepository {
 }
 
 trait InfrastructureModule { this: DomainModule =>
-  val partnerRepository = PartnerRepositoryMemory()
+  val partnerRepository = PartnerMemoryRepository()
 }
 
 class Injector extends InfrastructureModule with DomainModule
