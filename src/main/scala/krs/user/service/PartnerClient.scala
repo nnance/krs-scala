@@ -17,7 +17,7 @@ case class PartnerClient() extends PartnerApi{
   private def convertOffer(o: PartnerOffer) =
     CreditCard(o.provider, Range(o.minimumCreditScore.getOrElse(0), o.maximumCreditScore.getOrElse(0)))
 
-  def getOffers(creditScore: Int): Future[Seq[Offer]] = {
+  def getOffers: CreditScore => Future[Seq[Offer]] = creditScore => {
     client.getOffers(creditScore).map(_.offers.map(convertOffer))
   }
 }

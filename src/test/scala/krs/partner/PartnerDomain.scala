@@ -34,3 +34,23 @@ class PartnerSystemSpec extends FlatSpec with Matchers {
     eligable.length should be(5)
   }
 }
+
+class DecoratorPatternSpec extends FlatSpec with Matchers {
+  import DecoratorPattern._
+
+  "isEven" should "return true for an even number" in {
+    isEven(2) should be(true)
+  }
+
+  "isEven" should "return false for an odd number" in {
+    isEven(1) should be(false)
+  }
+
+  "getCustomer for id 1" should "return a user" in {
+    getCustomer(1).getOrElse(None) should not be(None)
+  }
+
+  "getCustomer for id 10" should "return not user" in {
+    getCustomer(10).getOrElse(None) should be(None)
+  }
+}
