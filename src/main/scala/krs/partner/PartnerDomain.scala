@@ -52,13 +52,7 @@ object DecoratorPattern {
   def getCustomer: GetCustomer = getCustomerFromList(customers, _)
 }
 
-trait PartnerApi {
-  import PartnerDomain._
-
-  def getOffers: CreditScore => Future[Seq[Offer]]
-}
-
-case class PartnerSystem(repository: PartnerRepository) extends PartnerApi {
+object PartnerSystem {
   import PartnerDomain._
 
   def filterOffers(offers: List[Offer], creditScore: CreditScore): List[Offer] =
@@ -69,8 +63,6 @@ case class PartnerSystem(repository: PartnerRepository) extends PartnerApi {
     val filteredOffers = filterOffers(offers, creditScore)
     Future.value(filteredOffers)
   }
-
-  def getOffers: CreditScore => Future[Seq[Offer]] = getOffersFromRepo(repository, _)
 }
 
 trait PartnerRepository {
@@ -80,6 +72,8 @@ trait PartnerRepository {
 }
 
 trait DomainModule {
+  import PartnerDomain._
+
   def partnerRepository: PartnerRepository
-  val partnerApi = PartnerSystem(partnerRepository)
+  def getOffers: CreditScore => Future[Seq[Offer]] = PartnerSystem.getOffersFromRepo(partnerRepository, _)
 }
