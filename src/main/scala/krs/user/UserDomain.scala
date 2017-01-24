@@ -2,7 +2,6 @@ package krs.user
 
 import com.twitter.util.Future
 import krs.eligibility.EligibilityApi
-import krs.partner.PartnerApi
 
 object UserDomain {
   import krs.partner.PartnerDomain._
@@ -29,7 +28,7 @@ trait UserRepository {
   def loadUsers(): List[User]
 }
 
-case class UserSystem(repository: UserRepository, partnerRepository: PartnerApi,
+case class UserSystem(repository: UserRepository, partnerRepository: krs.partner.DomainModule,
                       eligibilitySystem: EligibilityApi) {
   import UserDomain._
 
@@ -55,7 +54,7 @@ case class UserSystem(repository: UserRepository, partnerRepository: PartnerApi,
 
 trait DomainModule {
   def repository: UserRepository
-  val partnerRepository: PartnerApi
+  val partnerRepository: krs.partner.DomainModule
   val eligibilityApi: EligibilityApi
   val userApi = UserSystem(repository, partnerRepository, eligibilityApi)
 }

@@ -45,6 +45,6 @@ object UserFileRepository {
 
 trait InfrastructureModule { this: DomainModule =>
   val repository = UserMemoryRepository()
-  val partnerRepository = new krs.partner.Injector().partnerApi
+  val partnerRepository = new krs.partner.Injector()
   val eligibilityApi = krs.eligibility.EligibilitySystem
 }

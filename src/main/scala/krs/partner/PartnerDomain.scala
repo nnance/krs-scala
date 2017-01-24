@@ -31,7 +31,9 @@ object DecoratorPattern {
     x
   }
 
-  def isEven(x: Int): Boolean = logValue(evenCheck(logValue(x)))
+  def isEven(x: Int): (Nothing) => Boolean = {
+    logValue _ andThen evenCheck _ andThen logValue _
+  }
 
   type CustomerId = Int
 
