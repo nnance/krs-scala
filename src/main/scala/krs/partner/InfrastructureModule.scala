@@ -1,9 +1,18 @@
 package krs.partner
 
+import com.twitter.util.Future
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
 import krs.common.FileSystem
+
+trait PartnerRepository {
+  import PartnerDomain.{CreditScore, Offer}
+  import PartnerSystem.{OffersRepo, getOffersFromRepo}
+
+  def getOffers: CreditScore => Future[Seq[Offer]] = getOffersFromRepo(loadOffers(), _)
+  def loadOffers(): OffersRepo
+}
 
 object PartnerFileRepository {
   case class JsonOffer(
@@ -18,7 +27,8 @@ object PartnerFileRepository {
   case class OfferType(value: String)
 
   case class Repository(val fileName: String) extends FileSystem with PartnerRepository {
-    import PartnerDomain._
+    import PartnerDomain.{CreditCard, PersonalLoan}
+    import PartnerSystem.OffersRepo
 
     private implicit val offerKeyDecoder = new KeyDecoder[OfferType] {
       override def apply(key: String): Option[OfferType] = Some(OfferType(key))
@@ -27,9 +37,9 @@ object PartnerFileRepository {
     private def readJsonOffer(source: String): List[Map[OfferType, JsonOffer]] =
       decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
 
-    def loadOffers(): List[Offer] = {
+    def loadOffers(): OffersRepo = {
       val json = readFile(fileName)
-      readJsonOffer(json).flatMap(m => m.keySet.map(k =>
+      val offers = readJsonOffer(json).flatMap(m => m.keySet.map(k =>
         k.value match {
           case "creditCard" =>
             m.get(k).map(o =>
@@ -48,6 +58,7 @@ object PartnerFileRepository {
           case _ =>
             None
         })).flatten
+      Future.value(offers)
     }
 
   }
@@ -55,10 +66,11 @@ object PartnerFileRepository {
 
 // scalastyle:off magic.number
 case class PartnerMemoryRepository() extends PartnerRepository {
-  import PartnerDomain._
+  import PartnerDomain.{CreditCard, PersonalLoan}
+  import PartnerSystem.OffersRepo
 
-  def loadOffers(): List[Offer] =
-    List(
+  def loadOffers(): OffersRepo = {
+    val offers = List(
       CreditCard("Offer01", Range(500, 700)),
       CreditCard("Offer02", Range(550, 700)),
       CreditCard("Offer03", Range(600, 700)),
@@ -70,10 +82,6 @@ case class PartnerMemoryRepository() extends PartnerRepository {
       PersonalLoan("Offer09", Range(500, 700), 100.00, 12),
       PersonalLoan("Offer10", Range(750, 770), 100.00, 12)
     )
+    Future.value(offers)
+  }
 }
-
-trait InfrastructureModule { this: DomainModule =>
-  val partnerRepository = PartnerMemoryRepository()
-}
-
-class Injector extends InfrastructureModule with DomainModule

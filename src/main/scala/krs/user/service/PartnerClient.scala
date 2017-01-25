@@ -2,10 +2,10 @@ package krs.user.service
 
 import com.twitter.finagle.Thrift
 import com.twitter.util.Future
-import krs.partner.{DomainModule, PartnerRepository}
+import krs.partner.PartnerRepository
 import krs.thriftscala.{PartnerOffer, PartnerService}
 
-case class Repository() extends PartnerRepository {
+case class PartnerClient() extends PartnerRepository {
   import krs.partner.PartnerDomain._
 
   private val conf = com.typesafe.config.ConfigFactory.load()
@@ -17,11 +17,6 @@ case class Repository() extends PartnerRepository {
   private def convertOffer(o: PartnerOffer) =
     CreditCard(o.provider, Range(o.minimumCreditScore.getOrElse(0), o.maximumCreditScore.getOrElse(0)))
 
-  def loadOffers: CreditScore => Future[Seq[Offer]] = creditScore => {
+  override def getOffers: CreditScore => Future[Seq[Offer]] = creditScore =>
     client.getOffers(creditScore).map(_.offers.map(convertOffer))
-  }
-}
-
-case class PartnerClient() extends DomainModule {
-  def partnerRepository: Repository = Repository()
 }

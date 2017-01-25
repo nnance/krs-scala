@@ -28,7 +28,7 @@ trait UserRepository {
   def loadUsers(): List[User]
 }
 
-case class UserSystem(repository: UserRepository, partnerRepository: krs.partner.DomainModule,
+case class UserSystem(repository: UserRepository, partnerRepository: krs.partner.PartnerRepository,
                       eligibilitySystem: EligibilityApi) {
   import UserDomain._
 
@@ -54,7 +54,7 @@ case class UserSystem(repository: UserRepository, partnerRepository: krs.partner
 
 trait DomainModule {
   def repository: UserRepository
-  val partnerRepository: krs.partner.DomainModule
+  val partnerRepository: krs.partner.PartnerMemoryRepository
   val eligibilityApi: EligibilityApi
   val userApi = UserSystem(repository, partnerRepository, eligibilityApi)
 }

@@ -24,9 +24,8 @@ object PartnerServer extends TwitterServer {
   }
 }
 
-object PartnerServiceImpl extends DomainModule {
+object PartnerServiceImpl {
 
-  import PartnerDomain._
   import com.twitter.util.Future
   import krs.common.PartnerUtil
   import krs.thriftscala.{PartnerResponse, PartnerService}
@@ -34,14 +33,14 @@ object PartnerServiceImpl extends DomainModule {
   private val conf = com.typesafe.config.ConfigFactory.load();
   private val partnerData = conf.getString("krs.partner.data")
 
+  val partnerRepository = PartnerFileRepository.Repository(partnerData)
+
   def apply(): PartnerService[Future] =
     new PartnerService[Future] {
 
       def getOffers(creditScore: Int) =
-        getOffersFromFile(creditScore).map(offers =>
+        partnerRepository.getOffers(creditScore).map(offers =>
           PartnerResponse(offers.map(PartnerUtil.convertOffer)))
     }
 
-  val partnerRepository = PartnerFileRepository.Repository(partnerData)
-  def getOffersFromFile: CreditScore => Future[Seq[Offer]] = PartnerSystem.getOffersFromRepo(partnerRepository, _)
 }
