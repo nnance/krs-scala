@@ -26,9 +26,9 @@ object PartnerDomain {
 object PartnerSystem {
   import PartnerDomain._
 
-  type OffersRepo = Future[List[Offer]]
+  type OffersRepo = Future[Seq[Offer]]
 
-  def filterOffers(offers: List[Offer], creditScore: CreditScore): List[Offer] =
+  def filterOffers(offers: Seq[Offer], creditScore: CreditScore): Seq[Offer] =
     offers.filter(o => creditScore >= o.creditScoreRange.min && creditScore <= o.creditScoreRange.max)
 
   def getOffersFromRepo(offers: OffersRepo, creditScore: CreditScore): Future[Seq[Offer]] =

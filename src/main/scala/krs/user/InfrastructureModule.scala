@@ -46,4 +46,5 @@ object UserFileRepository {
 trait InfrastructureModule { this: DomainModule =>
   val repository = UserMemoryRepository()
   val eligibilityApi = krs.eligibility.EligibilitySystem
+  val partnerRepository = krs.partner.PartnerMemoryRepository()
 }

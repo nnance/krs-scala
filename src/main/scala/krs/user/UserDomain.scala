@@ -54,7 +54,7 @@ case class UserSystem(repository: UserRepository, partnerRepository: krs.partner
 
 trait DomainModule {
   def repository: UserRepository
-  val partnerRepository: krs.partner.PartnerMemoryRepository
+  val partnerRepository: krs.partner.PartnerRepository
   val eligibilityApi: EligibilityApi
   val userApi = UserSystem(repository, partnerRepository, eligibilityApi)
 }

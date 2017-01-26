@@ -3,6 +3,7 @@ package krs.user.service
 import com.twitter.finagle.Thrift
 import com.twitter.util.Future
 import krs.partner.PartnerRepository
+import krs.partner.PartnerSystem.OffersRepo
 import krs.thriftscala.{PartnerOffer, PartnerService}
 
 case class PartnerClient() extends PartnerRepository {
@@ -19,4 +20,8 @@ case class PartnerClient() extends PartnerRepository {
 
   override def getOffers: CreditScore => Future[Seq[Offer]] = creditScore =>
     client.getOffers(creditScore).map(_.offers.map(convertOffer))
+
+  def loadOffers(): OffersRepo =
+    client.getOffers(100).map(_.offers.map(convertOffer))
+
 }
