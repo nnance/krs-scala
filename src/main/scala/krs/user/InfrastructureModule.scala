@@ -5,8 +5,9 @@ import io.circe.parser._
 import krs.common.FileSystem
 
 // scalastyle:off magic.number
-case class UserMemoryRepository() extends UserRepository {
+case class UserMemoryRepository() {
   import UserDomain._
+  import krs.user.UserSystem.GetUser
 
   def loadUsers(): List[User] = {
     List(
@@ -16,18 +17,20 @@ case class UserMemoryRepository() extends UserRepository {
       new User(4, "TestUser04", 765, 0.00)
     )
   }
+
+  def getUser: GetUser = UserSystem.getUser(loadUsers(), _)
 }
 
 object UserFileRepository {
   case class JsonUser(
-                       id: Int,
-                       name: String,
-                       creditScore: Int,
-                       outstandingLoanAmount: Double
-                     )
+    id: Int,
+    name: String,
+    creditScore: Int,
+    outstandingLoanAmount: Double)
 
-  case class Repository(val fileName: String) extends FileSystem with UserRepository {
+  case class Repository(val fileName: String) extends FileSystem {
     import UserDomain._
+    import UserSystem.GetUser
 
     private def readJsonUser(source: String): List[JsonUser] = {
       decode[List[JsonUser]](source).getOrElse(List())
@@ -38,13 +41,9 @@ object UserFileRepository {
         User(u.id, u.name, u.creditScore, u.outstandingLoanAmount)
       })
     }
+
+    def getUser: GetUser = UserSystem.getUser(loadUsers(), _)
   }
 
 
-}
-
-trait InfrastructureModule { this: DomainModule =>
-  val repository = UserMemoryRepository()
-  val getOffers = krs.partner.PartnerMemoryRepository().getOffers
-  val filter = krs.eligibility.EligibilitySystem.filterEligible
 }

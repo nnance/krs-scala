@@ -18,31 +18,26 @@ object UserDomain {
     offers: Seq[Offer]
   )
 
+}
+
+object UserSystem {
+  import UserDomain._
+
+  type UserRepo = List[User]
+  type GetUser = Int => Option[User]
+
   case class UserNotFound(id: Int) extends Exception {
     override def getMessage: String = s"User(${id.toString}) not found."
   }
-}
 
-trait UserRepository {
-  import UserDomain._
+  def getUser(repository: UserRepo, id: Int): Option[User] =
+    repository.find(_.id == id)
 
-  def loadUsers(): List[User]
-}
-
-case class UserSystem(repository: UserRepository, getOffers: GetOffers,
-                      filter: EligibilityFilter) {
-  import UserDomain._
-
-  def getUsers(): List[User] = {
-    repository.loadUsers()
-  }
-
-  def getUser(id: Int): Option[User] = {
-    repository.loadUsers().find(_.id == id)
-  }
-
-  def getUserWithOffers(id: Int): Future[Option[UserWithOffers]] = {
-    getUser(id) match {
+  def getUserWithOffers(getOffers: GetOffers,
+                        filter: EligibilityFilter,
+                        repository: UserRepo,
+                        id: Int): Future[Option[UserWithOffers]] =
+    getUser(repository, id) match {
       case Some(u) =>
         for {
           offers <- getOffers(u.creditScore)
@@ -50,12 +45,4 @@ case class UserSystem(repository: UserRepository, getOffers: GetOffers,
         } yield Option(UserWithOffers(u, eligible))
       case None => Future.value(None)
     }
-  }
-}
-
-trait DomainModule {
-  def repository: UserRepository
-  val getOffers: GetOffers
-  val filter: EligibilityFilter
-  val userApi = UserSystem(repository, getOffers, filter)
 }

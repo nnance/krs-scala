@@ -6,8 +6,6 @@ import com.twitter.util.Await
 
 object PartnerServer extends TwitterServer {
 
-  val serviceImpl = PartnerServiceImpl()
-
   val partnerService = statsReceiver.counter("partnerService")
 
   def main(): Unit = {
@@ -17,7 +15,7 @@ object PartnerServer extends TwitterServer {
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface("localhost:8081", serviceImpl)
+      .serveIface("localhost:8081", PartnerServiceImpl())
 
     onExit { server.close() }
     Await.ready(server)
