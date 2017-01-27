@@ -6,14 +6,6 @@ import io.circe.generic.auto._
 import io.circe.parser._
 import krs.common.FileSystem
 
-trait PartnerRepository {
-  import PartnerDomain.{CreditScore, Offer}
-  import PartnerSystem.{OffersRepo, getOffersFromRepo}
-
-  def getOffers: CreditScore => Future[Seq[Offer]] = getOffersFromRepo(loadOffers(), _)
-  def loadOffers(): OffersRepo
-}
-
 object PartnerFileRepository {
   case class JsonOffer(
     id: Int,
@@ -26,9 +18,9 @@ object PartnerFileRepository {
 
   case class OfferType(value: String)
 
-  case class Repository(val fileName: String) extends FileSystem with PartnerRepository {
+  case class Repository(val fileName: String) extends FileSystem {
     import PartnerDomain.{CreditCard, PersonalLoan}
-    import PartnerSystem.OffersRepo
+    import PartnerSystem.{GetOffers, OffersRepo, getOffersFromRepo}
 
     private implicit val offerKeyDecoder = new KeyDecoder[OfferType] {
       override def apply(key: String): Option[OfferType] = Some(OfferType(key))
@@ -36,6 +28,8 @@ object PartnerFileRepository {
 
     private def readJsonOffer(source: String): List[Map[OfferType, JsonOffer]] =
       decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
+
+    def getOffers: GetOffers = getOffersFromRepo(loadOffers(), _)
 
     def loadOffers(): OffersRepo = {
       val json = readFile(fileName)
@@ -65,9 +59,11 @@ object PartnerFileRepository {
 }
 
 // scalastyle:off magic.number
-case class PartnerMemoryRepository() extends PartnerRepository {
+case class PartnerMemoryRepository() {
   import PartnerDomain.{CreditCard, PersonalLoan}
-  import PartnerSystem.OffersRepo
+  import PartnerSystem.{GetOffers, OffersRepo, getOffersFromRepo}
+
+  def getOffers: GetOffers = getOffersFromRepo(loadOffers(), _)
 
   def loadOffers(): OffersRepo = {
     val offers = List(

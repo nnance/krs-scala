@@ -1,7 +1,8 @@
 package krs.user
 
 import com.twitter.util.Future
-import krs.eligibility.EligibilityApi
+import krs.eligibility.EligibilitySystem.EligibilityFilter
+import krs.partner.PartnerSystem.GetOffers
 
 object UserDomain {
   import krs.partner.PartnerDomain._
@@ -28,8 +29,8 @@ trait UserRepository {
   def loadUsers(): List[User]
 }
 
-case class UserSystem(repository: UserRepository, partnerRepository: krs.partner.PartnerRepository,
-                      eligibilitySystem: EligibilityApi) {
+case class UserSystem(repository: UserRepository, getOffers: GetOffers,
+                      filter: EligibilityFilter) {
   import UserDomain._
 
   def getUsers(): List[User] = {
@@ -44,8 +45,8 @@ case class UserSystem(repository: UserRepository, partnerRepository: krs.partner
     getUser(id) match {
       case Some(u) =>
         for {
-          offers <- partnerRepository.getOffers(u.creditScore)
-          eligible <- eligibilitySystem.filterEligible(u, offers)
+          offers <- getOffers(u.creditScore)
+          eligible <- filter(u, offers)
         } yield Option(UserWithOffers(u, eligible))
       case None => Future.value(None)
     }
@@ -54,7 +55,7 @@ case class UserSystem(repository: UserRepository, partnerRepository: krs.partner
 
 trait DomainModule {
   def repository: UserRepository
-  val partnerRepository: krs.partner.PartnerRepository
-  val eligibilityApi: EligibilityApi
-  val userApi = UserSystem(repository, partnerRepository, eligibilityApi)
+  val getOffers: GetOffers
+  val filter: EligibilityFilter
+  val userApi = UserSystem(repository, getOffers, filter)
 }

@@ -15,14 +15,7 @@ trait EligibilityDomain {
   }
 }
 
-trait EligibilityApi {
-  import krs.partner.PartnerDomain._
-
-  def filterEligible(user: User, offers: Seq[Offer]): Future[Seq[Offer]]
-}
-
-
-object EligibilitySystem extends EligibilityDomain with EligibilityApi {
+object EligibilitySystem extends EligibilityDomain {
   import krs.partner.PartnerDomain._
 
   private implicit object CreditScoreRangeRule extends EligibilityRule[CreditScoreRange] {
@@ -47,6 +40,8 @@ object EligibilitySystem extends EligibilityDomain with EligibilityApi {
           isEligible(user, MaxLoanAmount(pl.maxLoanAmount))
     }
 
-  def filterEligible(user: User, offers: Seq[Offer]): Future[Seq[Offer]] =
+  type EligibilityFilter = (User, Seq[Offer]) => Future[Seq[Offer]]
+
+  def filterEligible: EligibilityFilter = (user, offers) =>
     Future.value(offers.filter(offer => EligibilitySystem.isEligible(user, offer)))
 }

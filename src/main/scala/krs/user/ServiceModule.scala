@@ -57,6 +57,6 @@ trait ServiceModule { this: DomainModule =>
   val userData = conf.getString("krs.user.data")
 
   val repository = UserFileRepository.Repository(userData)
-  val partnerRepository = PartnerClient()
-  val eligibilityApi = krs.eligibility.EligibilitySystem
+  val getOffers = PartnerClient().getOffers
+  val filter = krs.eligibility.EligibilitySystem.filterEligible
 }
