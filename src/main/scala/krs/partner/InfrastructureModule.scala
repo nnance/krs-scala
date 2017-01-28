@@ -20,7 +20,7 @@ object PartnerFileRepository {
 
   case class Repository(val fileName: String) extends FileSystem {
     import PartnerDomain.{CreditCard, PersonalLoan}
-    import PartnerSystem.{GetOffers, OffersRepo, getOffersFromRepo}
+    import PartnerSystem.{GetOffers, OffersRepo}
 
     private implicit val offerKeyDecoder = new KeyDecoder[OfferType] {
       override def apply(key: String): Option[OfferType] = Some(OfferType(key))
@@ -29,7 +29,7 @@ object PartnerFileRepository {
     private def readJsonOffer(source: String): List[Map[OfferType, JsonOffer]] =
       decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
 
-    def getOffers: GetOffers = getOffersFromRepo(loadOffers(), _)
+    def getOffers: GetOffers = PartnerSystem.getOffers(loadOffers(), _)
 
     def loadOffers(): OffersRepo = {
       val json = readFile(fileName)
@@ -61,9 +61,9 @@ object PartnerFileRepository {
 // scalastyle:off magic.number
 case class PartnerMemoryRepository() {
   import PartnerDomain.{CreditCard, PersonalLoan}
-  import PartnerSystem.{GetOffers, OffersRepo, getOffersFromRepo}
+  import PartnerSystem.{GetOffers, OffersRepo}
 
-  def getOffers: GetOffers = getOffersFromRepo(loadOffers(), _)
+  def getOffers: GetOffers = PartnerSystem.getOffers(loadOffers(), _)
 
   def loadOffers(): OffersRepo = {
     val offers = List(

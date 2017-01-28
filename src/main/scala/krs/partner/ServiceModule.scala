@@ -4,6 +4,13 @@ import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
 import com.twitter.util.Await
 
+trait ServiceInfrastructure {
+  private val conf = com.typesafe.config.ConfigFactory.load();
+  private val partnerData = conf.getString("krs.partner.data")
+
+  val partnerRepository = PartnerFileRepository.Repository(partnerData)
+}
+
 object PartnerServer extends TwitterServer {
 
   val partnerService = statsReceiver.counter("partnerService")
@@ -22,16 +29,11 @@ object PartnerServer extends TwitterServer {
   }
 }
 
-object PartnerServiceImpl {
+object PartnerServiceImpl extends ServiceInfrastructure {
 
   import com.twitter.util.Future
   import krs.common.PartnerUtil
   import krs.thriftscala.{PartnerResponse, PartnerService}
-
-  private val conf = com.typesafe.config.ConfigFactory.load();
-  private val partnerData = conf.getString("krs.partner.data")
-
-  val partnerRepository = PartnerFileRepository.Repository(partnerData)
 
   def apply(): PartnerService[Future] =
     new PartnerService[Future] {

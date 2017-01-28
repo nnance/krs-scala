@@ -28,7 +28,7 @@ class PartnerSystemSpec extends FlatSpec with Matchers {
   }
 
   "getOffers" should "have 5 items for 550 score" in {
-    val eligable = Await.result(PartnerSystem.getOffersFromRepo(Future.value(offers), 550))
+    val eligable = Await.result(PartnerSystem.getOffers(Future.value(offers), 550))
     eligable.length should be(5)
   }
 }

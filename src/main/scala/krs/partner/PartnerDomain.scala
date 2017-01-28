@@ -32,6 +32,6 @@ object PartnerSystem {
   def filterOffers(offers: Seq[Offer], creditScore: CreditScore): Seq[Offer] =
     offers.filter(o => creditScore >= o.creditScoreRange.min && creditScore <= o.creditScoreRange.max)
 
-  def getOffersFromRepo(offers: OffersRepo, creditScore: CreditScore): Future[Seq[Offer]] =
+  def getOffers(offers: OffersRepo, creditScore: CreditScore): Future[Seq[Offer]] =
     offers.map(filterOffers(_, creditScore))
 }

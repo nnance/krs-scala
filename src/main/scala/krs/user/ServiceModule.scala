@@ -5,6 +5,15 @@ import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 import krs.user.service.PartnerClient
 
+trait ServiceInfrastructure {
+  val conf = com.typesafe.config.ConfigFactory.load()
+  val userData = conf.getString("krs.user.data")
+
+  val repo = UserFileRepository.Repository(userData)
+  val getOffers = PartnerClient().getOffers
+
+}
+
 object UserServer
     extends TwitterServer {
 
@@ -23,21 +32,16 @@ object UserServer
   }
 }
 
-object UserServiceImpl {
+object UserServiceImpl extends ServiceInfrastructure {
   import krs.common.PartnerUtil
   import krs.thriftscala.{User, UserService}
   import UserDomain._
   import krs.user.UserSystem.{UserNotFound, getUserWithOffers}
   import krs.eligibility.EligibilitySystem.filterEligible
 
-  type GetUserOffers = (List[UserDomain.User], Int) => Future[Option[UserWithOffers]]
-
-  val conf = com.typesafe.config.ConfigFactory.load()
-  val userData = conf.getString("krs.user.data")
-
-  val repo = UserFileRepository.Repository(userData)
-  val getOffers = PartnerClient().getOffers
   val getUserWithOfferFromServices: GetUserOffers = getUserWithOffers(getOffers, filterEligible, _, _)
+
+  type GetUserOffers = (List[UserDomain.User], Int) => Future[Option[UserWithOffers]]
 
   def apply(): UserService[Future] = {
 
