@@ -1,8 +1,8 @@
 package krs.user
 
 import com.twitter.util.Future
-import krs.eligibility.EligibilityApi
-import krs.partner.PartnerApi
+import krs.eligibility.EligibilitySystem.EligibilityFilter
+import krs.partner.PartnerSystem.GetOffers
 
 object UserDomain {
   import krs.partner.PartnerDomain._
@@ -18,44 +18,30 @@ object UserDomain {
     offers: Seq[Offer]
   )
 
+}
+
+object UserSystem {
+  import UserDomain._
+
+  type UserRepo = List[User]
+  type GetUser = Int => Option[User]
+
   case class UserNotFound(id: Int) extends Exception {
     override def getMessage: String = s"User(${id.toString}) not found."
   }
-}
 
-trait UserRepository {
-  import UserDomain._
+  def getUser(repository: UserRepo, id: Int): Option[User] =
+    repository.find(_.id == id)
 
-  def loadUsers(): List[User]
-}
-
-case class UserSystem(repository: UserRepository, partnerRepository: PartnerApi,
-                      eligibilitySystem: EligibilityApi) {
-  import UserDomain._
-
-  def getUsers(): List[User] = {
-    repository.loadUsers()
-  }
-
-  def getUser(id: Int): Option[User] = {
-    repository.loadUsers().find(_.id == id)
-  }
-
-  def getUserWithOffers(id: Int): Future[Option[UserWithOffers]] = {
-    getUser(id) match {
+  def getUserWithOffers(user: Option[User],
+                        getOffers: GetOffers,
+                        filter: EligibilityFilter): Future[Option[UserWithOffers]] =
+    user match {
       case Some(u) =>
         for {
-          offers <- partnerRepository.getOffers(u.creditScore)
-          eligible <- eligibilitySystem.filterEligible(u, offers)
+          offers <- getOffers(u.creditScore)
+          eligible <- filter(u, offers)
         } yield Option(UserWithOffers(u, eligible))
       case None => Future.value(None)
     }
-  }
-}
-
-trait DomainModule {
-  def repository: UserRepository
-  val partnerRepository: PartnerApi
-  val eligibilityApi: EligibilityApi
-  val userApi = UserSystem(repository, partnerRepository, eligibilityApi)
 }

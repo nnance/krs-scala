@@ -4,12 +4,14 @@ import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
 import com.twitter.util.Await
 
-object PartnerServer
-    extends TwitterServer
-    with ServiceModule
-    with DomainModule {
+trait ServiceInfrastructure {
+  private val conf = com.typesafe.config.ConfigFactory.load();
+  private val partnerData = conf.getString("krs.partner.data")
 
-  val serviceImpl = PartnerServiceImpl(partnerApi)
+  val partnerRepository = PartnerFileRepository.Repository(partnerData)
+}
+
+object PartnerServer extends TwitterServer {
 
   val partnerService = statsReceiver.counter("partnerService")
 
@@ -20,29 +22,25 @@ object PartnerServer
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface("localhost:8081", serviceImpl)
+      .serveIface("localhost:8081", PartnerServiceImpl())
 
     onExit { server.close() }
     Await.ready(server)
   }
 }
 
-object PartnerServiceImpl {
+object PartnerServiceImpl extends ServiceInfrastructure {
+
   import com.twitter.util.Future
   import krs.common.PartnerUtil
   import krs.thriftscala.{PartnerResponse, PartnerService}
 
-  def apply(api: PartnerSystem): PartnerService[Future] =
+  def apply(): PartnerService[Future] =
     new PartnerService[Future] {
+
       def getOffers(creditScore: Int) =
-        api.getOffers(creditScore).map(offers =>
+        partnerRepository.getOffers(creditScore).map(offers =>
           PartnerResponse(offers.map(PartnerUtil.convertOffer)))
     }
-}
 
-trait ServiceModule { this: DomainModule =>
-  private val conf = com.typesafe.config.ConfigFactory.load();
-  private val partnerData = conf.getString("krs.partner.data")
-
-  val partnerRepository = PartnerFileRepository.Repository(partnerData)
 }

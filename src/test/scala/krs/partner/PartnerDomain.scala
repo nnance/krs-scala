@@ -1,9 +1,7 @@
 package krs.partner
 
-import com.twitter.util.Await
+import com.twitter.util.{Await, Future}
 import org.scalatest._
-
-trait TestModule extends InfrastructureModule with DomainModule
 
 class PartnerSystemSpec extends FlatSpec with Matchers {
   import PartnerDomain._
@@ -19,18 +17,18 @@ class PartnerSystemSpec extends FlatSpec with Matchers {
     PersonalLoan("Offer08", Range(750, 770), 100.00, 12)
   )
 
-  "filterOffers" should "have 5 items for 550 score" in new TestModule {
-    val eligable = partnerApi.filterOffers(offers, 550)
+  "filterOffers" should "have 5 items for 550 score" in {
+    val eligable = PartnerSystem.filterOffers(offers, 550)
     eligable.length should be(5)
   }
 
-  "filterOffers" should "have 1 item for 750 score"  in new TestModule {
-    val eligable = partnerApi.filterOffers(offers, 750)
+  "filterOffers" should "have 1 item for 750 score" in {
+    val eligable = PartnerSystem.filterOffers(offers, 750)
     eligable.length should be(1)
   }
 
-  "getOffers" should "have 5 items for 550 score" in new TestModule {
-    val eligable = Await.result(partnerApi.getOffers(550))
+  "getOffers" should "have 5 items for 550 score" in {
+    val eligable = Await.result(PartnerSystem.getOffers(Future.value(offers), 550))
     eligable.length should be(5)
   }
 }
