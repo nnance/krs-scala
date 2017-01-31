@@ -33,11 +33,10 @@ object UserSystem {
   def getUser(repository: UserRepo, id: Int): Option[User] =
     repository.find(_.id == id)
 
-  def getUserWithOffers(getOffers: GetOffers,
-                        filter: EligibilityFilter,
-                        repository: UserRepo,
-                        id: Int): Future[Option[UserWithOffers]] =
-    getUser(repository, id) match {
+  def getUserWithOffers(user: Option[User],
+                        getOffers: GetOffers,
+                        filter: EligibilityFilter): Future[Option[UserWithOffers]] =
+    user match {
       case Some(u) =>
         for {
           offers <- getOffers(u.creditScore)

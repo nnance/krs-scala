@@ -30,7 +30,6 @@ object UserFileRepository {
 
   case class Repository(val fileName: String) extends FileSystem {
     import UserDomain._
-    import UserSystem.GetUser
 
     private def readJsonUser(source: String): List[JsonUser] = {
       decode[List[JsonUser]](source).getOrElse(List())
@@ -41,8 +40,6 @@ object UserFileRepository {
         User(u.id, u.name, u.creditScore, u.outstandingLoanAmount)
       })
     }
-
-    def getUser: GetUser = UserSystem.getUser(loadUsers(), _)
   }
 
 

@@ -33,21 +33,19 @@ object UserServer
 }
 
 object UserServiceImpl extends ServiceInfrastructure {
-  import krs.common.PartnerUtil
+  import krs.common.PartnerUtil.convertOffer
   import krs.thriftscala.{User, UserService}
-  import UserDomain._
-  import krs.user.UserSystem.{UserNotFound, getUserWithOffers}
+  import krs.user.UserSystem.{GetUser, UserNotFound}
   import krs.eligibility.EligibilitySystem.filterEligible
 
-  val getUserWithOfferFromServices: GetUserOffers = getUserWithOffers(getOffers, filterEligible, _, _)
-
-  type GetUserOffers = (List[UserDomain.User], Int) => Future[Option[UserWithOffers]]
 
   def apply(): UserService[Future] = {
 
     new UserService[Future] {
+      def getUserForRepo: GetUser = UserSystem.getUser(repo.loadUsers(), _)
+
       def getUser(id: Int) = {
-        val user = repo.getUser(id) match {
+        val user = getUserForRepo(id) match {
           case Some(u) => User(u.id, u.name, u.creditScore, Option(u.outstandingLoanAmount))
           case None => throw UserNotFound(id)
         }
@@ -55,9 +53,14 @@ object UserServiceImpl extends ServiceInfrastructure {
       }
 
       def getUserWithOffers(id: Int) =
-        getUserWithOfferFromServices(repo.loadUsers(), id).map(_ match {
+        UserSystem.getUserWithOffers(getUserForRepo(id), getOffers, filterEligible).map(_ match {
           case Some(u) =>
-            User(u.user.id, u.user.name, u.user.creditScore, Option(u.user.outstandingLoanAmount), Option(u.offers.map(PartnerUtil.convertOffer)))
+            User(
+              u.user.id,
+              u.user.name,
+              u.user.creditScore,
+              Option(u.user.outstandingLoanAmount),
+              Option(u.offers.map(convertOffer)))
           case None =>
             throw UserNotFound(id)
         })
