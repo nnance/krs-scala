@@ -1,21 +1,30 @@
-package krs.eligibility.domain
+package krs.eligibility
 
-import krs.user.domain.{User}
-import krs.partner.domain.{Offer, CreditCard, PersonalLoan}
+import com.twitter.util.Future
+import krs.user.UserDomain.User
 
-// Here is our ADT for what an eligibility rule is. Each rule can be one of
-// the following choices (max loan amount is x, credit score range is min/max)
-sealed trait Rule
-case class CreditScoreRange(val range: Range) extends Rule
-case class MaxLoanAmount(val amount: Double) extends Rule
+trait EligibilityDomain {
+  // Here is our ADT for what an eligibility rule is. Each rule can be one of
+  // the following choices (max loan amount is x, credit score range is min/max)
+  sealed trait Rule
+  case class CreditScoreRange(val range: Range) extends Rule
+  case class MaxLoanAmount(val amount: Double) extends Rule
 
-trait OffersDomain {
   sealed trait EligibilityRule[T] {
     def isEligible(user: User, rule: T): Boolean
   }
 }
 
-object OfferSystem extends OffersDomain {
+trait EligibilityApi {
+  import krs.partner.PartnerDomain._
+
+  def filterEligible(user: User, offers: Seq[Offer]): Future[Seq[Offer]]
+}
+
+
+object EligibilitySystem extends EligibilityDomain with EligibilityApi {
+  import krs.partner.PartnerDomain._
+
   private implicit object CreditScoreRangeRule extends EligibilityRule[CreditScoreRange] {
     def isEligible(user: User, rule: CreditScoreRange): Boolean =
       user.creditScore >= rule.range.min && user.creditScore <= rule.range.max
@@ -37,4 +46,7 @@ object OfferSystem extends OffersDomain {
         isEligible(user, CreditScoreRange(pl.creditScoreRange)) &&
           isEligible(user, MaxLoanAmount(pl.maxLoanAmount))
     }
+
+  def filterEligible(user: User, offers: Seq[Offer]): Future[Seq[Offer]] =
+    Future.value(offers.filter(offer => EligibilitySystem.isEligible(user, offer)))
 }

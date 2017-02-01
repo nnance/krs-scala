@@ -6,8 +6,6 @@ com.twitter.scrooge.ScroogeSBT.newSettings
 
 scalariformSettings
 
-ensimeIgnoreMissingDirectories := true
-
 val finchVersion = "0.11.0-M4"
 val circeVersion = "0.5.3"
 
@@ -26,3 +24,5 @@ libraryDependencies ++= Seq(
   "org.apache.thrift" % "libthrift" % "0.9.3",
   "com.typesafe" % "config" % "1.3.1"
 )
+
+addCommandAlias("full", ";clean ;compile ;test ;scalastyle")
