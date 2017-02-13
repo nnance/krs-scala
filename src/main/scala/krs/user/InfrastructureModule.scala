@@ -3,11 +3,11 @@ package krs.user
 import io.circe.generic.auto._
 import io.circe.parser._
 import krs.common.FileSystem
+import UserDomain.UserRepository
 
 // scalastyle:off magic.number
-case class UserMemoryRepository() {
+case class UserMemoryRepository() extends UserRepository {
   import UserDomain._
-  import krs.user.UserSystem.GetUser
 
   def loadUsers(): List[User] = {
     List(
@@ -18,7 +18,8 @@ case class UserMemoryRepository() {
     )
   }
 
-  def getUser: GetUser = UserSystem.getUser(loadUsers(), _)
+  def getUser: Int => Option[User] = id =>
+    loadUsers().find(_.id == id)
 }
 
 object UserFileRepository {
@@ -28,17 +29,17 @@ object UserFileRepository {
     creditScore: Int,
     outstandingLoanAmount: Double)
 
-  case class Repository(val fileName: String) extends FileSystem {
+  case class Repository(val fileName: String) extends FileSystem with UserRepository {
     import UserDomain._
 
     private def readJsonUser(source: String): List[JsonUser] = {
       decode[List[JsonUser]](source).getOrElse(List())
     }
 
-    def loadUsers(): List[User] = {
+    def getUser: Int => Option[User] = id => {
       readJsonUser(readFile(fileName)).map(u => {
         User(u.id, u.name, u.creditScore, u.outstandingLoanAmount)
-      })
+      }).find(_.id == id)
     }
   }
 

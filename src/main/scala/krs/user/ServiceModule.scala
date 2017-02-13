@@ -14,8 +14,7 @@ trait ServiceInfrastructure {
 
 }
 
-object UserServer
-    extends TwitterServer {
+object UserServer extends TwitterServer {
 
   val userService = statsReceiver.counter("userService")
 

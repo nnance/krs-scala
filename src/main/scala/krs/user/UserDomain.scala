@@ -18,13 +18,15 @@ object UserDomain {
     offers: Seq[Offer]
   )
 
+  trait UserRepository {
+    def getUser: Int => Option[User]
+  }
 }
 
 object UserSystem {
   import UserDomain._
 
   type UserRepo = List[User]
-  type GetUser = Int => Option[User]
 
   case class UserNotFound(id: Int) extends Exception {
     override def getMessage: String = s"User(${id.toString}) not found."

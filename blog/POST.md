@@ -12,6 +12,8 @@ At Credit Karma, we have been in the process of decomposing our monolithic PHP a
 
 This solves the eventual goal of self contained, single responsibility modules that can be easily deployed independently.  However, this typically results in having to start several Docker containers in order to run the entire system.  This design makes it difficult to maintain the system and run integration tests without some kind of orchestration to make it easier.
 
+
+
 What if systems were designed to be easily ran as a single process and deployed as independent microservices in production.  If systems were designed with clear separation of concerns, proper APIs and injectable external dependencies, we could run the entire system as a single process.  Then, simply replace the API interaction with a lightweight microservice framework and deploy the ecosystem as separate services.
 
 ## An alternative design
