@@ -18,27 +18,27 @@ object UserDomain {
     offers: Seq[Offer]
   )
 
-  trait UserRepository {
-    def getUser: Int => Option[User]
-  }
 }
 
-object UserSystem {
+trait UserRepository {
   import UserDomain._
 
-  type UserRepo = List[User]
+  def getUser: Int => Option[User]
+}
 
-  case class UserNotFound(id: Int) extends Exception {
-    override def getMessage: String = s"User(${id.toString}) not found."
-  }
+case class UserNotFound(id: Int) extends Exception {
+  override def getMessage: String = s"User(${id.toString}) not found."
+}
 
-  def getUser(repository: UserRepo, id: Int): Option[User] =
-    repository.find(_.id == id)
+case class UserSystem(repo: UserRepository) {
+  import UserDomain._
 
-  def getUserWithOffers(user: Option[User],
+  def getUser: Int => Option[User] = repo.getUser
+
+  def getUserWithOffers(id: Int,
                         getOffers: GetOffers,
                         filter: EligibilityFilter): Future[Option[UserWithOffers]] =
-    user match {
+    getUser(id) match {
       case Some(u) =>
         for {
           offers <- getOffers(u.creditScore)

@@ -3,7 +3,6 @@ package krs.user
 import io.circe.generic.auto._
 import io.circe.parser._
 import krs.common.FileSystem
-import UserDomain.UserRepository
 
 // scalastyle:off magic.number
 case class UserMemoryRepository() extends UserRepository {

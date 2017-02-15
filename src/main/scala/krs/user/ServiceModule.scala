@@ -34,7 +34,6 @@ object UserServer extends TwitterServer {
 object UserServiceImpl extends ServiceInfrastructure {
   import krs.common.PartnerUtil.convertOffer
   import krs.thriftscala.{User, UserService}
-  import krs.user.UserDomain.{UserNotFound}
   import krs.eligibility.EligibilitySystem.filterEligible
 
 
