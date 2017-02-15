@@ -32,15 +32,17 @@ object UserFileRepository {
   case class Repository(val fileName: String) extends FileSystem with UserRepository {
     import UserDomain._
 
-    private def readJsonUser(source: String): List[JsonUser] = {
+    private def readJsonUser(source: String): List[JsonUser] =
       decode[List[JsonUser]](source).getOrElse(List())
-    }
 
-    def getUser: Int => Option[User] = id => {
+    def loadUsers(): List[User] = {
       readJsonUser(readFile(fileName)).map(u => {
         User(u.id, u.name, u.creditScore, u.outstandingLoanAmount)
-      }).find(_.id == id)
+      })
     }
+
+    def getUser: Int => Option[User] = id =>
+      loadUsers().find(_.id == id)
   }
 
 

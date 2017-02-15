@@ -34,17 +34,17 @@ object UserServer extends TwitterServer {
 object UserServiceImpl extends ServiceInfrastructure {
   import krs.common.PartnerUtil.convertOffer
   import krs.thriftscala.{User, UserService}
-  import krs.user.UserSystem.{GetUser, UserNotFound}
+  import krs.user.UserDomain.{UserNotFound}
   import krs.eligibility.EligibilitySystem.filterEligible
 
 
   def apply(): UserService[Future] = {
 
-    new UserService[Future] {
-      def getUserForRepo: GetUser = UserSystem.getUser(repo.loadUsers(), _)
+    val userSystem = new UserSystem(repo)
 
+    new UserService[Future] {
       def getUser(id: Int) = {
-        val user = getUserForRepo(id) match {
+        val user = userSystem.getUser(id) match {
           case Some(u) => User(u.id, u.name, u.creditScore, Option(u.outstandingLoanAmount))
           case None => throw UserNotFound(id)
         }
@@ -52,7 +52,7 @@ object UserServiceImpl extends ServiceInfrastructure {
       }
 
       def getUserWithOffers(id: Int) =
-        UserSystem.getUserWithOffers(getUserForRepo(id), getOffers, filterEligible).map(_ match {
+        userSystem.getUserWithOffers(id, getOffers, filterEligible).map(_ match {
           case Some(u) =>
             User(
               u.user.id,
