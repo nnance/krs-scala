@@ -5,16 +5,25 @@ import io.circe.parser._
 import krs.common.FileSystem
 
 // scalastyle:off magic.number
-case class UserMemoryRepository() extends UserRepository {
-  import UserDomain._
+trait UserRepositoryComponentImpl extends UserRepositoryComponent {
 
-  def loadUsers(): List[User] = {
-    List(
-      new User(1, "TestUser01", 500, 100.00),
-      new User(2, "TestUser02", 765, 100.00),
-      new User(3, "TestUser03", 500, 0.00),
-      new User(4, "TestUser04", 765, 0.00)
-    )
+  def userRepository: UserRepository = UserMemoryRepository()
+
+  case class UserMemoryRepository() extends UserRepository {
+
+    import UserDomain._
+
+    def loadUsers(): List[User] = {
+      List(
+        new User(1, "TestUser01", 500, 100.00),
+        new User(2, "TestUser02", 765, 100.00),
+        new User(3, "TestUser03", 500, 0.00),
+        new User(4, "TestUser04", 765, 0.00)
+      )
+    }
+
+    def get: Int => Option[User] = id =>
+      loadUsers().find(u => u.id == id)
   }
 }
 

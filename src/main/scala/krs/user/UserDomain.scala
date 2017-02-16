@@ -23,23 +23,24 @@ object UserDomain {
   }
 }
 
-trait UserRepository {
-  import UserDomain._
+trait UserRepositoryComponent {
 
-  def loadUsers(): List[User]
+  def userRepository: UserRepository
+
+  trait UserRepository {
+
+    import UserDomain._
+
+    def get: Int => Option[User]
+  }
+
 }
 
-case class UserSystem(repository: UserRepository, partnerRepository: PartnerApi,
-                      eligibilitySystem: EligibilityApi) {
+case class UserSystem(partnerRepository: PartnerApi,
+                      eligibilitySystem: EligibilityApi) { this: UserRepositoryComponent =>
   import UserDomain._
 
-  def getUsers(): List[User] = {
-    repository.loadUsers()
-  }
-
-  def getUser(id: Int): Option[User] = {
-    repository.loadUsers().find(_.id == id)
-  }
+  def getUser: Int => Option[User] = userRepository.get
 
   def getUserWithOffers(id: Int): Future[Option[UserWithOffers]] = {
     getUser(id) match {
