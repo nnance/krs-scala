@@ -6,9 +6,10 @@ import krs.eligibility.EligibilitySystem
 import krs.partner.PartnerMemoryRepository
 
 trait TestInfrastructure {
-  val offersRepo = PartnerMemoryRepository().getOffers
+  val repo = UserMemoryRepository()
+  val getOffers = PartnerMemoryRepository().getOffers
   val filter = EligibilitySystem.filterEligible
-  val userSystem = new UserSystem(UserMemoryRepository())
+  val userSystem = new UserSystem(repo, getOffers, filter)
 }
 
 class UserSystemSpec extends FlatSpec with Matchers with TestInfrastructure {
@@ -24,7 +25,7 @@ class UserSystemSpec extends FlatSpec with Matchers with TestInfrastructure {
   }
 
   "getUserWithOffers for id 2" should "have 2 offers" in {
-    val userWithOffers = Await.result(userSystem.getUserWithOffers(2, offersRepo, filter))
+    val userWithOffers = Await.result(userSystem.getUserWithOffers(2))
     userWithOffers.get.offers.length should be(2)
   }
 }

@@ -39,7 +39,7 @@ object UserServiceImpl extends ServiceInfrastructure {
 
   def apply(): UserService[Future] = {
 
-    val userSystem = new UserSystem(repo)
+    val userSystem = new UserSystem(repo, getOffers, filterEligible)
 
     new UserService[Future] {
       def getUser(id: Int) = {
@@ -51,7 +51,7 @@ object UserServiceImpl extends ServiceInfrastructure {
       }
 
       def getUserWithOffers(id: Int) =
-        userSystem.getUserWithOffers(id, getOffers, filterEligible).map(_ match {
+        userSystem.getUserWithOffers(id).map(_ match {
           case Some(u) =>
             User(
               u.user.id,

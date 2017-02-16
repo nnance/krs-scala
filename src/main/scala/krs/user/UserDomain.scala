@@ -30,14 +30,19 @@ case class UserNotFound(id: Int) extends Exception {
   override def getMessage: String = s"User(${id.toString}) not found."
 }
 
-case class UserSystem(repo: UserRepository) {
+case class UserSystem(repo: UserRepository,
+                      getOffers: GetOffers,
+                      filter: EligibilityFilter) {
   import UserDomain._
 
   def getUser: Int => Option[User] = repo.getUser
 
-  def getUserWithOffers(id: Int,
-                        getOffers: GetOffers,
-                        filter: EligibilityFilter): Future[Option[UserWithOffers]] =
+  def getUserWithOffers: Int => Future[Option[UserWithOffers]] =
+    getUserOffers(_, getOffers, filter)
+
+  private def getUserOffers(id: Int,
+                    getOffers: GetOffers,
+                    filter: EligibilityFilter): Future[Option[UserWithOffers]] =
     getUser(id) match {
       case Some(u) =>
         for {
