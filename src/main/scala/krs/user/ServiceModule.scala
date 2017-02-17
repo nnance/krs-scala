@@ -3,14 +3,8 @@ package krs.user
 import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
-import krs.user.service.PartnerClient
 
-object UserServer
-    extends TwitterServer
-    with ServiceModule
-    with DomainModule {
-
-  val userImpl = UserServiceImpl(userApi)
+object UserServer extends TwitterServer {
 
   val userService = statsReceiver.counter("userService")
 
@@ -20,22 +14,23 @@ object UserServer
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface(host, userImpl)
+      .serveIface(host, UserServiceImpl())
 
     onExit { server.close() }
     Await.ready(server)
   }
 }
 
-object UserServiceImpl {
+object UserServiceImpl extends UserServerComponent {
+
   import krs.common.PartnerUtil
-  import krs.thriftscala.{User, UserService}
+  import krs.thriftscala.{User}
   import krs.user.UserDomain.UserNotFound
 
-  def apply(api: UserSystem): UserService[Future] =
-    new UserService[Future] {
+  def apply(): krs.thriftscala.UserService[Future] =
+    new krs.thriftscala.UserService[Future] {
       def getUser(id: Int) = {
-        val user = api.getUser(id) match {
+        val user = userService.getUser(id) match {
           case Some(u) => User(u.id, u.name, u.creditScore, Option(u.outstandingLoanAmount))
           case None => throw UserNotFound(id)
         }
@@ -43,20 +38,22 @@ object UserServiceImpl {
       }
 
       def getUserWithOffers(id: Int) =
-        api.getUserWithOffers(id).map(_ match {
-          case Some(u) =>
-            User(u.user.id, u.user.name, u.user.creditScore, Option(u.user.outstandingLoanAmount), Option(u.offers.map(PartnerUtil.convertOffer)))
-          case None =>
+//        userService.getUserWithOffers(id).map(_ match {
+//          case Some(u) =>
+//            User(u.user.id, u.user.name, u.user.creditScore, Option(u.user.outstandingLoanAmount), Option(u.offers.map(PartnerUtil.convertOffer)))
+//          case None =>
             throw UserNotFound(id)
-        })
+//        })
     }
 }
 
-trait ServiceModule { this: DomainModule =>
+trait UserServerComponent extends
+  UserServiceComponent with
+  UserFileRepositoryComponent {
+
   val conf = com.typesafe.config.ConfigFactory.load()
   val userData = conf.getString("krs.user.data")
 
-  val repository = UserFileRepository.Repository(userData)
-  val partnerRepository = PartnerClient()
-  val eligibilityApi = krs.eligibility.EligibilitySystem
+  val userRepository = new UserFileRepository(userData)
+  val userService = new UserService
 }

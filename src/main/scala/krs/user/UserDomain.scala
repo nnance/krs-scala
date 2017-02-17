@@ -36,27 +36,27 @@ trait UserRepositoryComponent {
 
 }
 
-case class UserSystem(partnerRepository: PartnerApi,
-                      eligibilitySystem: EligibilityApi) { this: UserRepositoryComponent =>
-  import UserDomain._
+trait UserServiceComponent {
+  this: UserRepositoryComponent =>
 
-  def getUser: Int => Option[User] = userRepository.get
+  val userService: UserService
 
-  def getUserWithOffers(id: Int): Future[Option[UserWithOffers]] = {
-    getUser(id) match {
-      case Some(u) =>
-        for {
-          offers <- partnerRepository.getOffers(u.creditScore)
-          eligible <- eligibilitySystem.filterEligible(u, offers)
-        } yield Option(UserWithOffers(u, eligible))
-      case None => Future.value(None)
-    }
+  case class UserService() {
+
+    import UserDomain._
+
+    def getUser: Int => Option[User] = userRepository.get
+
+//    def getUserWithOffers(id: Int): Future[Option[UserWithOffers]] = {
+//      getUser(id) match {
+//        case Some(u) =>
+//          for {
+//            offers <- partnerRepository.getOffers(u.creditScore)
+//            eligible <- eligibilitySystem.filterEligible(u, offers)
+//          } yield Option(UserWithOffers(u, eligible))
+//        case None => Future.value(None)
+//      }
+//    }
   }
-}
 
-trait DomainModule {
-  def repository: UserRepository
-  val partnerRepository: PartnerApi
-  val eligibilityApi: EligibilityApi
-  val userApi = UserSystem(repository, partnerRepository, eligibilityApi)
 }
