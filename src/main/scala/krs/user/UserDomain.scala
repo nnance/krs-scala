@@ -2,7 +2,6 @@ package krs.user
 
 import com.twitter.util.Future
 import krs.eligibility.EligibilityApi
-import krs.partner.PartnerApi
 
 object UserDomain {
   import krs.partner.PartnerDomain._

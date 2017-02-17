@@ -2,22 +2,30 @@ package krs.user.service
 
 import com.twitter.finagle.Thrift
 import com.twitter.util.Future
-import krs.partner.PartnerApi
-import krs.thriftscala.{PartnerOffer, PartnerService}
+import krs.partner.PartnerService
+import krs.thriftscala.{PartnerOffer}
 
-case class PartnerClient() extends PartnerApi{
-  import krs.partner.PartnerDomain._
 
-  private val conf = com.typesafe.config.ConfigFactory.load()
-  private val partnerHost = conf.getString("krs.partner.host")
+trait PartnerClientComponent {
 
-  private val client: PartnerService.FutureIface =
-    Thrift.client.newIface[PartnerService.FutureIface](partnerHost, classOf[PartnerService.FutureIface])
+  val partnerService: PartnerService
 
-  private def convertOffer(o: PartnerOffer) =
-    CreditCard(o.provider, Range(o.minimumCreditScore.getOrElse(0), o.maximumCreditScore.getOrElse(0)))
+  case class PartnerClient() extends PartnerService {
 
-  def getOffers(creditScore: Int): Future[Seq[Offer]] = {
-    client.getOffers(creditScore).map(_.offers.map(convertOffer))
+    import krs.partner.PartnerDomain._
+
+    private val conf = com.typesafe.config.ConfigFactory.load()
+    private val partnerHost = conf.getString("krs.partner.host")
+
+    private val client: krs.thriftscala.PartnerService.FutureIface =
+      Thrift.client.newIface[krs.thriftscala.PartnerService.FutureIface](partnerHost, classOf[krs.thriftscala.PartnerService.FutureIface])
+
+    private def convertOffer(o: PartnerOffer) =
+      CreditCard(o.provider, Range(o.minimumCreditScore.getOrElse(0), o.maximumCreditScore.getOrElse(0)))
+
+    override def getOffers(creditScore: Int): Future[Seq[Offer]] = {
+      client.getOffers(creditScore).map(_.offers.map(convertOffer))
+    }
   }
+
 }

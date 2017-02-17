@@ -21,32 +21,48 @@ object PartnerDomain {
   ) extends Offer
 }
 
-trait PartnerApi {
+//trait PartnerApi {
+//  import PartnerDomain._
+//
+//  def getOffers(creditScore: Int): Future[Seq[Offer]]
+//}
+//
+trait PartnerService {
   import PartnerDomain._
 
   def getOffers(creditScore: Int): Future[Seq[Offer]]
 }
 
-case class PartnerSystem(repository: PartnerRepository) extends PartnerApi {
-  import PartnerDomain._
+trait PartnerServiceComponent {
+  this: PartnerRepositoryComponent =>
 
-  def filterOffers(offers: List[Offer], creditScore: Int): List[Offer] =
-    offers.filter(o => creditScore >= o.creditScoreRange.min && creditScore <= o.creditScoreRange.max)
+  def partnerService: PartnerService
 
-  def getOffers(creditScore: Int): Future[Seq[Offer]] = {
-    val offers = repository.loadOffers
-    val filteredOffers = filterOffers(offers, creditScore)
-    Future.value(filteredOffers)
+  case class PartnerServiceImpl() extends PartnerService {
+
+    import PartnerDomain._
+
+    def filterOffers(offers: List[Offer], creditScore: Int): List[Offer] =
+      offers.filter(o => creditScore >= o.creditScoreRange.min && creditScore <= o.creditScoreRange.max)
+
+    def getOffers(creditScore: Int): Future[Seq[Offer]] = {
+      val offers = partnerRepository.loadOffers
+      val filteredOffers = filterOffers(offers, creditScore)
+      Future.value(filteredOffers)
+    }
   }
+
 }
 
-trait PartnerRepository {
-  import PartnerDomain._
+trait PartnerRepositoryComponent {
 
-  def loadOffers(): List[Offer]
-}
-
-trait DomainModule {
   def partnerRepository: PartnerRepository
-  val partnerApi = PartnerSystem(partnerRepository)
+
+  trait PartnerRepository {
+
+    import PartnerDomain._
+
+    def loadOffers(): List[Offer]
+  }
+
 }

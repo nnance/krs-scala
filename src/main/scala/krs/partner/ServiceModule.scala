@@ -5,11 +5,7 @@ import com.twitter.server.TwitterServer
 import com.twitter.util.Await
 
 object PartnerServer
-    extends TwitterServer
-    with ServiceModule
-    with DomainModule {
-
-  val serviceImpl = PartnerServiceImpl(partnerApi)
+    extends TwitterServer {
 
   val partnerService = statsReceiver.counter("partnerService")
 
@@ -20,29 +16,33 @@ object PartnerServer
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface("localhost:8081", serviceImpl)
+      .serveIface("localhost:8081", PartnerServiceImpl)
 
     onExit { server.close() }
     Await.ready(server)
   }
 }
 
-object PartnerServiceImpl {
+object PartnerServiceImpl extends PartnerServerComponent {
   import com.twitter.util.Future
   import krs.common.PartnerUtil
-  import krs.thriftscala.{PartnerResponse, PartnerService}
+  import krs.thriftscala.{PartnerResponse}
 
-  def apply(api: PartnerSystem): PartnerService[Future] =
-    new PartnerService[Future] {
+  def apply(): krs.thriftscala.PartnerService[Future] =
+    new krs.thriftscala.PartnerService[Future] {
       def getOffers(creditScore: Int) =
-        api.getOffers(creditScore).map(offers =>
+        partnerService.getOffers(creditScore).map(offers =>
           PartnerResponse(offers.map(PartnerUtil.convertOffer)))
     }
 }
 
-trait ServiceModule { this: DomainModule =>
+trait PartnerServerComponent extends
+  PartnerFileRepositoryComponent with
+  PartnerServiceComponent {
+
   private val conf = com.typesafe.config.ConfigFactory.load();
   private val partnerData = conf.getString("krs.partner.data")
 
-  val partnerRepository = PartnerFileRepository.Repository(partnerData)
+  val partnerRepository = PartnerFileRepository(partnerData)
+  val partnerService = PartnerServiceImpl()
 }

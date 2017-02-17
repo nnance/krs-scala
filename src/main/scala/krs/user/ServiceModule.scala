@@ -54,6 +54,6 @@ trait UserServerComponent extends
   val conf = com.typesafe.config.ConfigFactory.load()
   val userData = conf.getString("krs.user.data")
 
-  val userRepository = new UserFileRepository(userData)
-  val userService = new UserService
+  val userRepository = UserFileRepository(userData)
+  val userService = UserService()
 }
