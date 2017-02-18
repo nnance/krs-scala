@@ -5,35 +5,35 @@ import krs.partner.PartnerDomain.{CreditCard, PersonalLoan}
 import krs.user.UserDomain.User
 import org.scalatest._
 
-class CreditCardOfferSpec extends FlatSpec with Matchers {
+class CreditCardOfferSpec extends FlatSpec with Matchers with EligibilitySystemComponent {
   val ccOffer = CreditCard("Chase", Range(500, 700))
 
   "isEligable" should "be true for user with score within range" in {
-    EligibilitySystem.isEligible(User(1, "Test", 500, 0.0), ccOffer) should be(true)
+    eligibilitySystem.isEligible(User(1, "Test", 500, 0.0), ccOffer) should be(true)
   }
 
   "isEligable" should "be false for user with score outside of range" in {
-    EligibilitySystem.isEligible(User(1, "Test", 499, 0.0), ccOffer) should be(false)
+    eligibilitySystem.isEligible(User(1, "Test", 499, 0.0), ccOffer) should be(false)
   }
 }
 
-class PersonalLoanOfferSpec extends FlatSpec with Matchers {
+class PersonalLoanOfferSpec extends FlatSpec with Matchers with EligibilitySystemComponent {
   val plOffer = PersonalLoan("Chase", Range(500, 700), 400.00, 12)
 
   "isEligable" should "be true for user with score within range" in {
-    EligibilitySystem.isEligible(User(1, "Test", 500, 300.0), plOffer) should be(true)
+    eligibilitySystem.isEligible(User(1, "Test", 500, 300.0), plOffer) should be(true)
   }
 
   "isEligable" should "be false for user with score outside of range" in {
-    EligibilitySystem.isEligible(User(1, "Test", 499, 300.0), plOffer) should be(false)
+    eligibilitySystem.isEligible(User(1, "Test", 499, 300.0), plOffer) should be(false)
   }
 
   "isEligable" should "be false for user with loan amount outside of range" in {
-    EligibilitySystem.isEligible(User(1, "Test", 500, 400.0), plOffer) should be(false)
+    eligibilitySystem.isEligible(User(1, "Test", 500, 400.0), plOffer) should be(false)
   }
 }
 
-class FilterEligibleOffersSpec extends FlatSpec with Matchers {
+class FilterEligibleOffersSpec extends FlatSpec with Matchers with EligibilitySystemComponent {
   // Offer01 should be the only thing that user01 is eligible for
   val user01 = new User(1, "TestUser01", 500, 100.00)
   // Offer05 and Offer06 should be the only thing that user02 is eligible for
@@ -57,25 +57,25 @@ class FilterEligibleOffersSpec extends FlatSpec with Matchers {
   )
 
   "Offer eligibilityRules length" should "be 1 for low scoreband user" in {
-    val eligibleOffers = Await.result(EligibilitySystem.filterEligible(user01, offers))
+    val eligibleOffers = Await.result(eligibilitySystem.filterEligible(user01, offers))
     eligibleOffers.size should be(1)
     eligibleOffers.head.provider should be("Offer01")
   }
 
   "Offer eligibilityRules length" should "be 2 for high scoreband user" in {
-    val eligibleOffers = Await.result(EligibilitySystem.filterEligible(user02, offers))
+    val eligibleOffers = Await.result(eligibilitySystem.filterEligible(user02, offers))
     eligibleOffers.size should be(2)
     eligibleOffers.head.provider should be("Offer05")
   }
 
   "Offer eligibilityRules length" should "be 2 for no outstanding loans" in {
-    val eligibleOffers = Await.result(EligibilitySystem.filterEligible(user03, offers))
+    val eligibleOffers = Await.result(eligibilitySystem.filterEligible(user03, offers))
     eligibleOffers.size should be(2)
     eligibleOffers.head.provider should be("Offer01")
   }
 
   "Offer eligibilityRules length" should "be 3 for no outstanding loans" in {
-    val eligibleOffers = Await.result(EligibilitySystem.filterEligible(user04, offers))
+    val eligibleOffers = Await.result(eligibilitySystem.filterEligible(user04, offers))
     eligibleOffers.size should be(3)
     eligibleOffers.head.provider should be("Offer05")
   }

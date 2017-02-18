@@ -18,6 +18,7 @@ trait EligibilityDomain {
 trait EligibilityApi {
   import krs.partner.PartnerDomain._
 
+  def isEligible(user: User, offer: Offer): Boolean
   def filterEligible(user: User, offers: Seq[Offer]): Future[Seq[Offer]]
 }
 
