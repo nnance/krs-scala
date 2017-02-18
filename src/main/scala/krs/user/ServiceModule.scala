@@ -3,6 +3,9 @@ package krs.user
 import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
+import krs.eligibility.EligibilitySystemComponent
+import krs.partner.PartnerServiceComponent
+import krs.user.service.PartnerClientComponent
 
 object UserServer extends TwitterServer {
 
@@ -38,22 +41,25 @@ object UserServiceImpl extends UserServerComponent {
       }
 
       def getUserWithOffers(id: Int) =
-//        userService.getUserWithOffers(id).map(_ match {
-//          case Some(u) =>
-//            User(u.user.id, u.user.name, u.user.creditScore, Option(u.user.outstandingLoanAmount), Option(u.offers.map(PartnerUtil.convertOffer)))
-//          case None =>
+        userService.getUserWithOffers(id).map(_ match {
+          case Some(u) =>
+            User(u.user.id, u.user.name, u.user.creditScore, Option(u.user.outstandingLoanAmount), Option(u.offers.map(PartnerUtil.convertOffer)))
+          case None =>
             throw UserNotFound(id)
-//        })
+        })
     }
 }
 
 trait UserServerComponent extends
   UserServiceComponent with
-  UserFileRepositoryComponent {
+  UserFileRepositoryComponent with
+  PartnerClientComponent with
+  EligibilitySystemComponent {
 
   val conf = com.typesafe.config.ConfigFactory.load()
   val userData = conf.getString("krs.user.data")
 
   val userRepository = UserFileRepository(userData)
   val userService = UserService()
+  val partnerService = PartnerClient()
 }

@@ -2,8 +2,8 @@ package krs.user.service
 
 import com.twitter.finagle.Thrift
 import com.twitter.util.Future
-import krs.partner.PartnerService
-import krs.thriftscala.{PartnerOffer}
+import krs.partner.{PartnerService, PartnerServiceComponent}
+import krs.thriftscala.PartnerOffer
 
 
 trait PartnerClientComponent {
