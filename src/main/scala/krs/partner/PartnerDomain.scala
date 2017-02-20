@@ -21,24 +21,37 @@ object PartnerDomain {
   ) extends Offer
 }
 
-//trait PartnerApi {
-//  import PartnerDomain._
-//
-//  def getOffers(creditScore: Int): Future[Seq[Offer]]
-//}
-//
-trait PartnerService {
-  import PartnerDomain._
+trait PartnerRepositoryComponent {
 
-  def getOffers(creditScore: Int): Future[Seq[Offer]]
+  def partnerRepository: PartnerRepository
+
+  trait PartnerRepository {
+
+    import PartnerDomain._
+
+    def loadOffers(): List[Offer]
+  }
+
 }
 
-trait PartnerServiceComponent {
+trait PartnerSystemComponent {
+
+  def partnerSystem: PartnerSystem
+
+  trait PartnerSystem {
+
+    import PartnerDomain._
+
+    def getOffers(creditScore: Int): Future[Seq[Offer]]
+  }
+
+}
+
+
+trait PartnerServiceComponent extends PartnerSystemComponent {
   this: PartnerRepositoryComponent =>
 
-  def partnerService: PartnerService
-
-  case class PartnerServiceImpl() extends PartnerService {
+  case class PartnerService() extends PartnerSystem {
 
     import PartnerDomain._
 
@@ -50,19 +63,6 @@ trait PartnerServiceComponent {
       val filteredOffers = filterOffers(offers, creditScore)
       Future.value(filteredOffers)
     }
-  }
-
-}
-
-trait PartnerRepositoryComponent {
-
-  def partnerRepository: PartnerRepository
-
-  trait PartnerRepository {
-
-    import PartnerDomain._
-
-    def loadOffers(): List[Offer]
   }
 
 }

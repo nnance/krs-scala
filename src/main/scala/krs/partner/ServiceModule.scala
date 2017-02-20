@@ -16,33 +16,31 @@ object PartnerServer
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface("localhost:8081", PartnerServiceImpl)
+      .serveIface("localhost:8081", PartnerServerComponent())
 
     onExit { server.close() }
     Await.ready(server)
   }
 }
 
-object PartnerServiceImpl extends PartnerServerComponent {
-  import com.twitter.util.Future
-  import krs.common.PartnerUtil
-  import krs.thriftscala.{PartnerResponse}
-
-  def apply(): krs.thriftscala.PartnerService[Future] =
-    new krs.thriftscala.PartnerService[Future] {
-      def getOffers(creditScore: Int) =
-        partnerService.getOffers(creditScore).map(offers =>
-          PartnerResponse(offers.map(PartnerUtil.convertOffer)))
-    }
-}
-
-trait PartnerServerComponent extends
+object PartnerServerComponent extends
   PartnerFileRepositoryComponent with
   PartnerServiceComponent {
+
+  import com.twitter.util.Future
+  import krs.common.PartnerUtil
+  import krs.thriftscala.PartnerResponse
 
   private val conf = com.typesafe.config.ConfigFactory.load();
   private val partnerData = conf.getString("krs.partner.data")
 
   val partnerRepository = PartnerFileRepository(partnerData)
-  val partnerService = PartnerServiceImpl()
+  val partnerSystem = PartnerService()
+
+  def apply(): krs.thriftscala.PartnerService[Future] =
+    new krs.thriftscala.PartnerService[Future] {
+      def getOffers(creditScore: Int) =
+        partnerSystem.getOffers(creditScore).map(offers =>
+          PartnerResponse(offers.map(PartnerUtil.convertOffer)))
+    }
 }

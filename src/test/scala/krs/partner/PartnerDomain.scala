@@ -8,7 +8,7 @@ trait TestModule extends
   PartnerMemoryRepositoryComponent
 {
   val partnerRepository = PartnerMemoryRepository()
-  val partnerService = PartnerServiceImpl()
+  val partnerSystem = PartnerService()
 }
 
 
@@ -27,17 +27,17 @@ class PartnerSystemSpec extends FlatSpec with Matchers with TestModule {
   )
 
   "filterOffers" should "have 5 items for 550 score" in {
-    val eligable = partnerService.filterOffers(offers, 550)
+    val eligable = partnerSystem.filterOffers(offers, 550)
     eligable.length should be(5)
   }
 
   "filterOffers" should "have 1 item for 750 score"  in {
-    val eligable = partnerService.filterOffers(offers, 750)
+    val eligable = partnerSystem.filterOffers(offers, 750)
     eligable.length should be(1)
   }
 
   "getOffers" should "have 5 items for 550 score" in {
-    val eligable = Await.result(partnerService.getOffers(550))
+    val eligable = Await.result(partnerSystem.getOffers(550))
     eligable.length should be(5)
   }
 }

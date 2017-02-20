@@ -2,15 +2,15 @@ package krs.user.service
 
 import com.twitter.finagle.Thrift
 import com.twitter.util.Future
-import krs.partner.{PartnerService, PartnerServiceComponent}
+import krs.partner.PartnerSystemComponent
 import krs.thriftscala.PartnerOffer
 
 
-trait PartnerClientComponent {
+trait PartnerClientComponent extends PartnerSystemComponent {
 
-  val partnerService: PartnerService
+  val partnerSystem = PartnerClient()
 
-  case class PartnerClient() extends PartnerService {
+  case class PartnerClient() extends PartnerSystem {
 
     import krs.partner.PartnerDomain._
 

@@ -4,7 +4,6 @@ import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 import krs.eligibility.EligibilitySystemComponent
-import krs.partner.PartnerServiceComponent
 import krs.user.service.PartnerClientComponent
 
 object UserServer extends TwitterServer {
@@ -61,5 +60,4 @@ trait UserServerComponent extends
 
   val userRepository = UserFileRepository(userData)
   val userService = UserService()
-  val partnerService = PartnerClient()
 }

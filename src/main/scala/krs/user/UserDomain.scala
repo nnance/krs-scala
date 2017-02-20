@@ -2,7 +2,7 @@ package krs.user
 
 import com.twitter.util.Future
 import krs.eligibility.EligibilitySystemComponent
-import krs.user.service.PartnerClientComponent
+import krs.partner.PartnerSystemComponent
 
 object UserDomain {
   import krs.partner.PartnerDomain._
@@ -37,7 +37,7 @@ trait UserRepositoryComponent {
 }
 
 trait UserServiceComponent {
-  this: UserRepositoryComponent with PartnerClientComponent with EligibilitySystemComponent =>
+  this: UserRepositoryComponent with PartnerSystemComponent with EligibilitySystemComponent =>
 
   val userService: UserService
 
@@ -51,7 +51,7 @@ trait UserServiceComponent {
       getUser(id) match {
         case Some(u) =>
           for {
-            offers <- partnerService.getOffers(u.creditScore)
+            offers <- partnerSystem.getOffers(u.creditScore)
             eligible <- eligibilitySystem.filterEligible(u, offers)
           } yield Option(UserWithOffers(u, eligible))
         case None => Future.value(None)

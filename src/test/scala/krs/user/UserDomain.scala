@@ -2,13 +2,20 @@ package krs.user
 
 import com.twitter.util.Await
 import org.scalatest._
+import krs.partner.{PartnerMemoryRepositoryComponent, PartnerServiceComponent}
+import krs.eligibility.EligibilitySystemComponent
 
 trait TestModule extends
   UserServiceComponent with
-  UserMemoryRepositoryComponent
-{
+  UserMemoryRepositoryComponent with
+  PartnerServiceComponent with
+  PartnerMemoryRepositoryComponent with
+  EligibilitySystemComponent {
+
   val userRepository = UserMemoryRepository()
   val userService = UserService()
+  val partnerRepository = PartnerMemoryRepository()
+  val partnerSystem = PartnerService()
 }
 
 class UserSystemSpec extends
@@ -26,8 +33,8 @@ class UserSystemSpec extends
     user.isDefined should be(false)
   }
 
-//  "getUserWithOffers for id 2" should "have 2 offers" in {
-//    val user = Await.result(userApi.getUserWithOffers(2))
-//    user.get.offers.length should be(2)
-//  }
+  "getUserWithOffers for id 2" should "have 2 offers" in {
+    val user = Await.result(userService.getUserWithOffers(2))
+    user.get.offers.length should be(2)
+  }
 }
