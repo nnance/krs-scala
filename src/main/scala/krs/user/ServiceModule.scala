@@ -16,18 +16,14 @@ object UserServer extends TwitterServer {
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface(host, UserServerComponent)
+      .serveIface(host, UserServerComponent())
 
     onExit { server.close() }
     Await.ready(server)
   }
 }
 
-object UserServerComponent extends
-  UserServiceComponent with
-  UserFileRepositoryComponent with
-  PartnerClientComponent with
-  EligibilitySystemComponent {
+object UserServerComponent extends UserServiceComponent with UserFileRepositoryComponent with PartnerClientComponent with EligibilitySystemComponent {
 
   import krs.common.PartnerUtil
   import krs.thriftscala.{User}

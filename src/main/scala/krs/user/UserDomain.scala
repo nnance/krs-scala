@@ -11,7 +11,8 @@ object UserDomain {
     id: Int,
     name: String,
     creditScore: Int,
-    outstandingLoanAmount: Double)
+    outstandingLoanAmount: Double
+  )
 
   case class UserWithOffers(
     user: User,

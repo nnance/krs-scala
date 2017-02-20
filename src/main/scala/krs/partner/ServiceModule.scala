@@ -4,10 +4,7 @@ import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 
-object PartnerServer extends
-  PartnerServerComponent with
-  PartnerFileRepositoryComponent with
-  TwitterServer {
+object PartnerServer extends PartnerServerComponent with PartnerFileRepositoryComponent with TwitterServer {
 
   import krs.common.PartnerUtil
   import krs.thriftscala.PartnerResponse
@@ -24,7 +21,6 @@ object PartnerServer extends
       partnerSystem.getOffers(creditScore).map(offers =>
         PartnerResponse(offers.map(PartnerUtil.convertOffer)))
   }
-
 
   def main(): Unit = {
 

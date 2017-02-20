@@ -10,13 +10,13 @@ trait PartnerFileRepositoryComponent extends PartnerRepositoryComponent {
   val partnerRepository: PartnerRepository
 
   case class JsonOffer(
-                        id: Int,
-                        provider: String,
-                        minimumCreditScore: Int,
-                        maximumCreditScore: Int,
-                        maximumAmount: Option[Double],
-                        term: Option[Int]
-                      )
+    id: Int,
+    provider: String,
+    minimumCreditScore: Int,
+    maximumCreditScore: Int,
+    maximumAmount: Option[Double],
+    term: Option[Int]
+  )
 
   case class OfferType(value: String)
 

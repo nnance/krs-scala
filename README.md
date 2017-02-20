@@ -22,19 +22,19 @@ The json data used for validation is included in the [data.json](./fixtures/data
 Starting the Partner Service
 
 ```sh
-sbt 'runMain krs.partner.service.PartnerServer -admin.port=:9990'
+sbt 'runMain krs.partner.PartnerServer -admin.port=:9990'
 ```
 
 Starting the User Service
 
 ```sh
-sbt 'runMain krs.user.service.UserServer -admin.port=:9991'
+sbt 'runMain krs.user.UserServer -admin.port=:9991'
 ```
 
 Starting the API Service
 
 ```sh
-sbt 'runMain rest.APIServer -admin.port=:9992'
+sbt 'runMain krs.rest.APIServer -admin.port=:9992'
 ```
 
 ## Testing

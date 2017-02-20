@@ -5,7 +5,6 @@ import com.twitter.util.Future
 import krs.partner.PartnerSystemComponent
 import krs.thriftscala.PartnerOffer
 
-
 trait PartnerClientComponent extends PartnerSystemComponent {
 
   val partnerSystem = PartnerClient()

@@ -31,10 +31,12 @@ trait UserFileRepositoryComponent extends UserRepositoryComponent {
 
   val userRepository: UserRepository
 
-  case class JsonUser(id: Int,
-                      name: String,
-                      creditScore: Int,
-                      outstandingLoanAmount: Double)
+  case class JsonUser(
+    id: Int,
+    name: String,
+    creditScore: Int,
+    outstandingLoanAmount: Double
+  )
 
   case class UserFileRepository(fileName: String) extends FileSystem with UserRepository {
 
