@@ -46,23 +46,3 @@ trait PartnerSystemComponent {
   }
 
 }
-
-
-trait PartnerServiceComponent extends PartnerSystemComponent {
-  this: PartnerRepositoryComponent =>
-
-  case class PartnerService() extends PartnerSystem {
-
-    import PartnerDomain._
-
-    def filterOffers(offers: List[Offer], creditScore: Int): List[Offer] =
-      offers.filter(o => creditScore >= o.creditScoreRange.min && creditScore <= o.creditScoreRange.max)
-
-    def getOffers(creditScore: Int): Future[Seq[Offer]] = {
-      val offers = partnerRepository.loadOffers
-      val filteredOffers = filterOffers(offers, creditScore)
-      Future.value(filteredOffers)
-    }
-  }
-
-}

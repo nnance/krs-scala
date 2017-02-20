@@ -4,11 +4,11 @@ import com.twitter.util.Await
 import org.scalatest._
 
 trait TestModule extends
-  PartnerServiceComponent with
+  PartnerServerComponent with
   PartnerMemoryRepositoryComponent
 {
   val partnerRepository = PartnerMemoryRepository()
-  val partnerSystem = PartnerService()
+  val partnerSystem = PartnerServer()
 }
 
 

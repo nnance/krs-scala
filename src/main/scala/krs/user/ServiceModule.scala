@@ -16,18 +16,28 @@ object UserServer extends TwitterServer {
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface(host, UserServiceImpl())
+      .serveIface(host, UserServerComponent)
 
     onExit { server.close() }
     Await.ready(server)
   }
 }
 
-object UserServiceImpl extends UserServerComponent {
+object UserServerComponent extends
+  UserServiceComponent with
+  UserFileRepositoryComponent with
+  PartnerClientComponent with
+  EligibilitySystemComponent {
 
   import krs.common.PartnerUtil
   import krs.thriftscala.{User}
   import krs.user.UserDomain.UserNotFound
+
+  val conf = com.typesafe.config.ConfigFactory.load()
+  val userData = conf.getString("krs.user.data")
+
+  val userRepository = UserFileRepository(userData)
+  val userService = UserService()
 
   def apply(): krs.thriftscala.UserService[Future] =
     new krs.thriftscala.UserService[Future] {
@@ -47,17 +57,4 @@ object UserServiceImpl extends UserServerComponent {
             throw UserNotFound(id)
         })
     }
-}
-
-trait UserServerComponent extends
-  UserServiceComponent with
-  UserFileRepositoryComponent with
-  PartnerClientComponent with
-  EligibilitySystemComponent {
-
-  val conf = com.typesafe.config.ConfigFactory.load()
-  val userData = conf.getString("krs.user.data")
-
-  val userRepository = UserFileRepository(userData)
-  val userService = UserService()
 }

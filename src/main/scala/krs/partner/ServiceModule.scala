@@ -2,12 +2,29 @@ package krs.partner
 
 import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
-import com.twitter.util.Await
+import com.twitter.util.{Await, Future}
 
-object PartnerServer
-    extends TwitterServer {
+object PartnerServer extends
+  PartnerServerComponent with
+  PartnerFileRepositoryComponent with
+  TwitterServer {
 
-  val partnerService = statsReceiver.counter("partnerService")
+  import krs.common.PartnerUtil
+  import krs.thriftscala.PartnerResponse
+
+  private val conf = com.typesafe.config.ConfigFactory.load()
+  private val partnerData = conf.getString("krs.partner.data")
+  val partnerRepository = PartnerFileRepository(partnerData)
+  val partnerSystem = PartnerServer()
+
+  val partnerStats = statsReceiver.counter("partnerService")
+
+  val partnerService = new krs.thriftscala.PartnerService[Future] {
+    def getOffers(creditScore: Int) =
+      partnerSystem.getOffers(creditScore).map(offers =>
+        PartnerResponse(offers.map(PartnerUtil.convertOffer)))
+  }
+
 
   def main(): Unit = {
 
@@ -16,31 +33,28 @@ object PartnerServer
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface("localhost:8081", PartnerServerComponent())
+      .serveIface("localhost:8081", partnerService)
 
     onExit { server.close() }
     Await.ready(server)
   }
 }
 
-object PartnerServerComponent extends
-  PartnerFileRepositoryComponent with
-  PartnerServiceComponent {
+trait PartnerServerComponent extends PartnerSystemComponent {
+  this: PartnerRepositoryComponent =>
 
-  import com.twitter.util.Future
-  import krs.common.PartnerUtil
-  import krs.thriftscala.PartnerResponse
+  case class PartnerServer() extends PartnerSystem {
 
-  private val conf = com.typesafe.config.ConfigFactory.load();
-  private val partnerData = conf.getString("krs.partner.data")
+    import PartnerDomain._
 
-  val partnerRepository = PartnerFileRepository(partnerData)
-  val partnerSystem = PartnerService()
+    def filterOffers(offers: List[Offer], creditScore: Int): List[Offer] =
+      offers.filter(o => creditScore >= o.creditScoreRange.min && creditScore <= o.creditScoreRange.max)
 
-  def apply(): krs.thriftscala.PartnerService[Future] =
-    new krs.thriftscala.PartnerService[Future] {
-      def getOffers(creditScore: Int) =
-        partnerSystem.getOffers(creditScore).map(offers =>
-          PartnerResponse(offers.map(PartnerUtil.convertOffer)))
+    def getOffers(creditScore: Int): Future[Seq[Offer]] = {
+      val offers = partnerRepository.loadOffers
+      val filteredOffers = filterOffers(offers, creditScore)
+      Future.value(filteredOffers)
     }
+  }
+
 }

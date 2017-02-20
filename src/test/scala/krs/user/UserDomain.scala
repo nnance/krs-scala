@@ -2,20 +2,20 @@ package krs.user
 
 import com.twitter.util.Await
 import org.scalatest._
-import krs.partner.{PartnerMemoryRepositoryComponent, PartnerServiceComponent}
+import krs.partner.{PartnerMemoryRepositoryComponent, PartnerServerComponent}
 import krs.eligibility.EligibilitySystemComponent
 
 trait TestModule extends
   UserServiceComponent with
   UserMemoryRepositoryComponent with
-  PartnerServiceComponent with
+  PartnerServerComponent with
   PartnerMemoryRepositoryComponent with
   EligibilitySystemComponent {
 
   val userRepository = UserMemoryRepository()
   val userService = UserService()
   val partnerRepository = PartnerMemoryRepository()
-  val partnerSystem = PartnerService()
+  val partnerSystem = PartnerServer()
 }
 
 class UserSystemSpec extends
