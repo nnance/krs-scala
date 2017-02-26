@@ -18,31 +18,21 @@ object UserDomain {
     offers: Seq[Offer]
   )
 
+  type GetUser = Int => Option[User]
 }
 
 trait UserRepository {
   import UserDomain._
 
-  def getUser: Int => Option[User]
+  def getUser: GetUser
 }
 
-case class UserNotFound(id: Int) extends Exception {
-  override def getMessage: String = s"User(${id.toString}) not found."
-}
-
-case class UserSystem(repo: UserRepository,
-                      getOffers: GetOffers,
-                      filter: EligibilityFilter) {
+trait UserSystem {
   import UserDomain._
 
-  def getUser: Int => Option[User] = repo.getUser
-
-  def getUserWithOffers: Int => Future[Option[UserWithOffers]] =
-    getUserOffers(_, getOffers, filter)
-
-  private def getUserOffers(id: Int,
+  def getUserWithOffers(getUser: GetUser,
                     getOffers: GetOffers,
-                    filter: EligibilityFilter): Future[Option[UserWithOffers]] =
+                    filter: EligibilityFilter)(id: Int): Future[Option[UserWithOffers]] =
     getUser(id) match {
       case Some(u) =>
         for {

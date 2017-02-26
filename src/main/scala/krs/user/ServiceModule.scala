@@ -5,13 +5,24 @@ import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 import krs.user.service.PartnerClient
 
-trait ServiceInfrastructure {
+trait ServiceInfrastructure extends UserSystem {
+  import UserDomain._
+  import krs.eligibility.EligibilitySystem.filterEligible
+
   val conf = com.typesafe.config.ConfigFactory.load()
   val userData = conf.getString("krs.user.data")
 
   val repo = UserFileRepository.Repository(userData)
   val getOffers = PartnerClient().getOffers
 
+
+  case class UserNotFound(id: Int) extends Exception {
+    override def getMessage: String = s"User(${id.toString}) not found."
+  }
+
+  def getUserFromRepo: GetUser = repo.getUser
+  def getUserWithOffersDeps: Int => Future[Option[UserWithOffers]] =
+    getUserWithOffers(repo.getUser, getOffers, filterEligible)
 }
 
 object UserServer extends TwitterServer {
@@ -34,16 +45,13 @@ object UserServer extends TwitterServer {
 object UserServiceImpl extends ServiceInfrastructure {
   import krs.common.PartnerUtil.convertOffer
   import krs.thriftscala.{User, UserService}
-  import krs.eligibility.EligibilitySystem.filterEligible
 
 
   def apply(): UserService[Future] = {
 
-    val userSystem = new UserSystem(repo, getOffers, filterEligible)
-
     new UserService[Future] {
       def getUser(id: Int) = {
-        val user = userSystem.getUser(id) match {
+        val user = getUserFromRepo(id) match {
           case Some(u) => User(u.id, u.name, u.creditScore, Option(u.outstandingLoanAmount))
           case None => throw UserNotFound(id)
         }
@@ -51,7 +59,7 @@ object UserServiceImpl extends ServiceInfrastructure {
       }
 
       def getUserWithOffers(id: Int) =
-        userSystem.getUserWithOffers(id).map(_ match {
+        getUserWithOffersDeps(id).map(_ match {
           case Some(u) =>
             User(
               u.user.id,
@@ -59,8 +67,7 @@ object UserServiceImpl extends ServiceInfrastructure {
               u.user.creditScore,
               Option(u.user.outstandingLoanAmount),
               Option(u.offers.map(convertOffer)))
-          case None =>
-            throw UserNotFound(id)
+          case None => throw UserNotFound(id)
         })
     }
   }
