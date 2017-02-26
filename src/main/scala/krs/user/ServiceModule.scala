@@ -12,7 +12,7 @@ trait ServiceInfrastructure extends UserSystem {
   val conf = com.typesafe.config.ConfigFactory.load()
   val userData = conf.getString("krs.user.data")
 
-  val repo = UserFileRepository.Repository(userData)
+  val repo = UserFileRepository(userData)
   val getOffers = PartnerClient().getOffers
 
 
@@ -21,8 +21,8 @@ trait ServiceInfrastructure extends UserSystem {
   }
 
   def getUserFromRepo: GetUser = repo.getUser
-  def getUserWithOffersDeps: Int => Future[Option[UserWithOffers]] =
-    getUserWithOffers(repo.getUser, getOffers, filterEligible)
+  def getUserWithOffersFromRepo: Int => Future[Option[UserWithOffers]] =
+    super.getUserWithOffers(repo.getUser, getOffers, filterEligible, _)
 }
 
 object UserServer extends TwitterServer {
@@ -59,7 +59,7 @@ object UserServiceImpl extends ServiceInfrastructure {
       }
 
       def getUserWithOffers(id: Int) =
-        getUserWithOffersDeps(id).map(_ match {
+        getUserWithOffersFromRepo(id).map(_ match {
           case Some(u) =>
             User(
               u.user.id,

@@ -1,8 +1,6 @@
 package krs.user
 
 import com.twitter.util.Future
-import krs.eligibility.EligibilitySystem.EligibilityFilter
-import krs.partner.PartnerSystem.GetOffers
 
 object UserDomain {
   import krs.partner.PartnerDomain._
@@ -29,10 +27,13 @@ trait UserRepository {
 
 trait UserSystem {
   import UserDomain._
+  import krs.partner.PartnerDomain._
+  import krs.eligibility.EligibilitySystem._
 
   def getUserWithOffers(getUser: GetUser,
-                    getOffers: GetOffers,
-                    filter: EligibilityFilter)(id: Int): Future[Option[UserWithOffers]] =
+                        getOffers: GetOffers,
+                        filter: EligibilityFilter,
+                        id: Int): Future[Option[UserWithOffers]] =
     getUser(id) match {
       case Some(u) =>
         for {

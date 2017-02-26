@@ -3,18 +3,22 @@ package krs.user
 import com.twitter.util.{Await, Future}
 import org.scalatest._
 import krs.eligibility.EligibilitySystem
+import krs.partner.PartnerSystem
 import krs.partner.PartnerMemoryRepository
 
-trait TestInfrastructure extends UserSystem {
+trait TestInfrastructure extends UserSystem with PartnerSystem {
   import UserDomain._
+  import krs.partner.PartnerDomain._
 
   val repo = UserMemoryRepository()
-  val getOffers = PartnerMemoryRepository().getOffers
+  val partnerRepo = PartnerMemoryRepository()
   val filter = EligibilitySystem.filterEligible
 
+  def getOffersFromRepo: GetOffers = getOffers(partnerRepo.getAll)
   def getUser: GetUser = repo.getUser
 
-  def getUserWithOffers(id: Int): Future[Option[UserWithOffers]] = super.getUserWithOffers(getUser, getOffers, filter)(id)
+  def getUserWithOffers: CreditScore => Future[Option[UserWithOffers]] =
+    getUserWithOffers(getUser, getOffersFromRepo, filter, _)
 }
 
 // scalastyle:off magic.number
