@@ -2,13 +2,17 @@ package krs.partner
 
 import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
-import com.twitter.util.Await
+import com.twitter.util.{Await, Future}
+import krs.partner.PartnerDomain.{CreditScore, GetAll, Offer}
 
-trait ServiceInfrastructure {
+trait ServiceInfrastructure extends PartnerSystem {
   private val conf = com.typesafe.config.ConfigFactory.load();
   private val partnerData = conf.getString("krs.partner.data")
 
-  val partnerRepository = PartnerFileRepository.Repository(partnerData)
+  val repo = PartnerFileRepository(partnerData)
+
+  def getOffersFromRepo: CreditScore => Future[Seq[Offer]] = score =>
+    super.getOffers(repo.getAll)(score)
 }
 
 object PartnerServer extends TwitterServer {
@@ -22,7 +26,7 @@ object PartnerServer extends TwitterServer {
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface("localhost:8081", PartnerServiceImpl())
+      .serveIface(host, PartnerServiceImpl())
 
     onExit { server.close() }
     Await.ready(server)
@@ -39,7 +43,7 @@ object PartnerServiceImpl extends ServiceInfrastructure {
     new PartnerService[Future] {
 
       def getOffers(creditScore: Int) =
-        partnerRepository.getOffers(creditScore).map(offers =>
+        getOffersFromRepo(creditScore).map(offers =>
           PartnerResponse(offers.map(PartnerUtil.convertOffer)))
     }
 

@@ -5,7 +5,6 @@ import krs.thriftscala.{PartnerOffer, PartnerService}
 
 case class PartnerClient() {
   import krs.partner.PartnerDomain._
-  import krs.partner.PartnerSystem._
 
   private val conf = com.typesafe.config.ConfigFactory.load()
   private val partnerHost = conf.getString("krs.partner.host")

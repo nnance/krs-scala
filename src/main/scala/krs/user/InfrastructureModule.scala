@@ -17,32 +17,28 @@ case class UserMemoryRepository() extends UserRepository {
     )
   }
 
-  def getUser: Int => Option[User] = id =>
+  def getUser: GetUser = id =>
     loadUsers().find(_.id == id)
 }
 
-object UserFileRepository {
-  case class JsonUser(
-    id: Int,
-    name: String,
-    creditScore: Int,
-    outstandingLoanAmount: Double)
+case class UserFileRepository(val fileName: String) extends FileSystem with UserRepository {
+  import UserDomain._
 
-  case class Repository(val fileName: String) extends FileSystem with UserRepository {
-    import UserDomain._
+  case class JsonUser(id: Int,
+                      name: String,
+                      creditScore: Int,
+                      outstandingLoanAmount: Double)
 
-    private def readJsonUser(source: String): List[JsonUser] =
-      decode[List[JsonUser]](source).getOrElse(List())
+  private def readJsonUser(source: String): List[JsonUser] =
+    decode[List[JsonUser]](source).getOrElse(List())
 
-    def loadUsers(): List[User] = {
-      readJsonUser(readFile(fileName)).map(u => {
-        User(u.id, u.name, u.creditScore, u.outstandingLoanAmount)
-      })
-    }
-
-    def getUser: Int => Option[User] = id =>
-      loadUsers().find(_.id == id)
+  def loadUsers(): List[User] = {
+    readJsonUser(readFile(fileName)).map(u => {
+      User(u.id, u.name, u.creditScore, u.outstandingLoanAmount)
+    })
   }
 
+  def getUser: GetUser = id =>
+    loadUsers().find(_.id == id)
 
 }

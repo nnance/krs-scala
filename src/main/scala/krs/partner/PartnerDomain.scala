@@ -21,17 +21,24 @@ object PartnerDomain {
     maxLoanAmount: Double,
     term: Long
   ) extends Offer
+
+  type GetAll = () => Future[Seq[Offer]]
+  type GetOffers = CreditScore => Future[Seq[Offer]]
 }
 
-object PartnerSystem {
+trait OfferRepository {
   import PartnerDomain._
 
-  type OffersRepo = Future[Seq[Offer]]
-  type GetOffers = CreditScore => Future[Seq[Offer]]
+  def getAll: GetAll
+}
 
-  def filterOffers(offers: Seq[Offer], creditScore: CreditScore): Seq[Offer] =
-    offers.filter(o => creditScore >= o.creditScoreRange.min && creditScore <= o.creditScoreRange.max)
+trait PartnerSystem {
+  import PartnerDomain._
 
-  def getOffers(offers: OffersRepo, creditScore: CreditScore): Future[Seq[Offer]] =
-    offers.map(filterOffers(_, creditScore))
+  private def isWithinRange(o: Offer, score: CreditScore): Boolean =
+    score >= o.creditScoreRange.min && score <= o.creditScoreRange.max
+
+
+  def getOffers: GetAll => GetOffers = getAll => creditScore =>
+    getAll().map(_.filter(isWithinRange(_, creditScore)))
 }

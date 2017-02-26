@@ -5,8 +5,11 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
 import krs.common.FileSystem
+import krs.partner.PartnerDomain.GetAll
 
-object PartnerFileRepository {
+case class PartnerFileRepository(val fileName: String) extends FileSystem with OfferRepository {
+  import PartnerDomain.{CreditCard, PersonalLoan, GetAll}
+
   case class JsonOffer(
     id: Int,
     provider: String,
@@ -18,54 +21,43 @@ object PartnerFileRepository {
 
   case class OfferType(value: String)
 
-  case class Repository(val fileName: String) extends FileSystem {
-    import PartnerDomain.{CreditCard, PersonalLoan}
-    import PartnerSystem.{GetOffers, OffersRepo}
+  private implicit val offerKeyDecoder = new KeyDecoder[OfferType] {
+    override def apply(key: String): Option[OfferType] = Some(OfferType(key))
+  }
 
-    private implicit val offerKeyDecoder = new KeyDecoder[OfferType] {
-      override def apply(key: String): Option[OfferType] = Some(OfferType(key))
-    }
+  private def readJsonOffer(source: String): List[Map[OfferType, JsonOffer]] =
+    decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
 
-    private def readJsonOffer(source: String): List[Map[OfferType, JsonOffer]] =
-      decode[List[Map[OfferType, JsonOffer]]](source).getOrElse(List())
-
-    def getOffers: GetOffers = PartnerSystem.getOffers(loadOffers(), _)
-
-    def loadOffers(): OffersRepo = {
-      val json = readFile(fileName)
-      val offers = readJsonOffer(json).flatMap(m => m.keySet.map(k =>
-        k.value match {
-          case "creditCard" =>
-            m.get(k).map(o =>
-              CreditCard(
-                o.provider,
-                Range(o.minimumCreditScore, o.maximumCreditScore)
-              ))
-          case "personalLoan" =>
-            m.get(k).map(o =>
-              PersonalLoan(
-                o.provider,
-                Range(o.minimumCreditScore, o.maximumCreditScore),
-                o.maximumAmount.getOrElse(0.0),
-                o.term.getOrElse(0).toLong
-              ))
-          case _ =>
-            None
-        })).flatten
-      Future.value(offers)
-    }
-
+  def getAll: GetAll = () => {
+    val json = readFile(fileName)
+    val offers = readJsonOffer(json).flatMap(m => m.keySet.map(k =>
+      k.value match {
+        case "creditCard" =>
+          m.get(k).map(o =>
+            CreditCard(
+              o.provider,
+              Range(o.minimumCreditScore, o.maximumCreditScore)
+            ))
+        case "personalLoan" =>
+          m.get(k).map(o =>
+            PersonalLoan(
+              o.provider,
+              Range(o.minimumCreditScore, o.maximumCreditScore),
+              o.maximumAmount.getOrElse(0.0),
+              o.term.getOrElse(0).toLong
+            ))
+        case _ =>
+          None
+      })).flatten
+    Future.value(offers)
   }
 }
 
 // scalastyle:off magic.number
-case class PartnerMemoryRepository() {
-  import PartnerDomain.{CreditCard, PersonalLoan}
-  import PartnerSystem.{GetOffers, OffersRepo}
+case class PartnerMemoryRepository() extends OfferRepository {
+  import PartnerDomain.{CreditCard, PersonalLoan, Offer}
 
-  def getOffers: GetOffers = PartnerSystem.getOffers(loadOffers(), _)
-
-  def loadOffers(): OffersRepo = {
+  def getAll: GetAll = () => {
     val offers = List(
       CreditCard("Offer01", Range(500, 700)),
       CreditCard("Offer02", Range(550, 700)),
