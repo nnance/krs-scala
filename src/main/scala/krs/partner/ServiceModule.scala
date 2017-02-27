@@ -5,16 +5,6 @@ import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 import krs.partner.PartnerDomain.{CreditScore, GetAll, Offer}
 
-trait ServiceInfrastructure extends PartnerSystem {
-  private val conf = com.typesafe.config.ConfigFactory.load();
-  private val partnerData = conf.getString("krs.partner.data")
-
-  val repo = PartnerFileRepository(partnerData)
-
-  def getOffersFromRepo: CreditScore => Future[Seq[Offer]] = score =>
-    super.getOffers(repo.getAll)(score)
-}
-
 object PartnerServer extends TwitterServer {
 
   val partnerService = statsReceiver.counter("partnerService")

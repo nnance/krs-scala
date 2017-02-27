@@ -3,27 +3,6 @@ package krs.user
 import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
-import krs.user.service.PartnerClient
-
-trait ServiceInfrastructure extends UserSystem {
-  import UserDomain._
-  import krs.eligibility.EligibilitySystem.filterEligible
-
-  val conf = com.typesafe.config.ConfigFactory.load()
-  val userData = conf.getString("krs.user.data")
-
-  val repo = UserFileRepository(userData)
-  val getOffers = PartnerClient().getOffers
-
-
-  case class UserNotFound(id: Int) extends Exception {
-    override def getMessage: String = s"User(${id.toString}) not found."
-  }
-
-  def getUserFromRepo: GetUser = repo.getUser
-  def getUserWithOffersFromRepo: Int => Future[Option[UserWithOffers]] =
-    super.getUserWithOffers(repo.getUser, getOffers, filterEligible, _)
-}
 
 object UserServer extends TwitterServer {
 
