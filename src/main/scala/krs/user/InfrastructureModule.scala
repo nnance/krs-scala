@@ -43,25 +43,3 @@ case class UserFileRepository(val fileName: String) extends FileSystem with User
     loadUsers().find(_.id == id)
 
 }
-
-trait ServiceInfrastructure extends UserSystem {
-  import UserDomain._
-  import krs.eligibility.EligibilitySystem.filterEligible
-  import krs.user.service.PartnerFinagleClient
-
-  private val conf = com.typesafe.config.ConfigFactory.load()
-  private val userData = conf.getString("krs.user.data")
-  private val partnerHost = conf.getString("krs.partner.host")
-
-  val repo = UserFileRepository(userData)
-  val partnerService = PartnerFinagleClient(partnerHost)
-
-
-  case class UserNotFound(id: Int) extends Exception {
-    override def getMessage: String = s"User(${id.toString}) not found."
-  }
-
-  def getUserFromRepo: GetUser = repo.getUser
-  def getUserWithOffersFromRepo: Int => Future[Option[UserWithOffers]] =
-    super.getUserWithOffers(repo.getUser, partnerService.getOffers, filterEligible, _)
-}

@@ -14,7 +14,7 @@ trait PartnerClient {
     client.getOffers(creditScore).map(_.offers.map(convertOffer))
 }
 
-case class PartnerFinagleClient(partnerHost: String) extends krs.user.service.PartnerClient {
+case class PartnerFinagleClient(partnerHost: String) extends PartnerClient {
   import com.twitter.finagle.Thrift
   import krs.thriftscala.PartnerService
 

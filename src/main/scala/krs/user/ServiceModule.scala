@@ -4,6 +4,34 @@ import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 
+trait ServiceInjector {
+  import krs.user.service.PartnerFinagleClient
+
+  private val conf = com.typesafe.config.ConfigFactory.load()
+  private val userData = conf.getString("krs.user.data")
+  private val partnerHost = conf.getString("krs.partner.host")
+
+  val repo = UserFileRepository(userData)
+  val partnerService = PartnerFinagleClient(partnerHost)
+}
+
+trait ServiceInfrastructure extends UserSystem {
+  import UserDomain._
+  import krs.user.service.PartnerClient
+  import krs.eligibility.EligibilitySystem.filterEligible
+
+  def repo: UserRepository
+  def partnerService: PartnerClient
+
+  case class UserNotFound(id: Int) extends Exception {
+    override def getMessage: String = s"User(${id.toString}) not found."
+  }
+
+  def getUserFromRepo: GetUser = repo.getUser
+  def getUserWithOffersFromRepo: Int => Future[Option[UserWithOffers]] =
+    super.getUserWithOffers(repo.getUser, partnerService.getOffers, filterEligible, _)
+}
+
 object UserServer extends TwitterServer {
 
   val userService = statsReceiver.counter("userService")
@@ -21,7 +49,7 @@ object UserServer extends TwitterServer {
   }
 }
 
-object UserServiceImpl extends ServiceInfrastructure {
+object UserServiceImpl extends ServiceInfrastructure with ServiceInjector {
   import krs.common.PartnerUtil.convertOffer
   import krs.thriftscala.{User, UserService}
 

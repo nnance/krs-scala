@@ -11,7 +11,7 @@ val circeVersion = "0.5.3"
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.0",
-  "org.scalatest" %% "scalatest" % "3.0.0" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.0" % "it,test",
   "com.github.finagle" %% "finch-core" % finchVersion,
   "com.github.finagle" %% "finch-circe" % finchVersion,
   "io.circe" %% "circe-core" % circeVersion,
@@ -26,3 +26,7 @@ libraryDependencies ++= Seq(
 )
 
 addCommandAlias("full", ";clean ;compile ;test ;scalastyle")
+
+lazy val root = (project in file(".")).
+  configs(IntegrationTest).
+  settings(Defaults.itSettings: _*)
