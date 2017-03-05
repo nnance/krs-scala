@@ -5,7 +5,6 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
 import krs.common.FileSystem
-import krs.partner.PartnerDomain.GetAll
 
 case class PartnerFileRepository(val fileName: String) extends FileSystem with OfferRepository {
   import PartnerDomain.{CreditCard, PersonalLoan, GetAll}
@@ -55,7 +54,7 @@ case class PartnerFileRepository(val fileName: String) extends FileSystem with O
 
 // scalastyle:off magic.number
 case class PartnerMemoryRepository() extends OfferRepository {
-  import PartnerDomain.{CreditCard, PersonalLoan, Offer}
+  import PartnerDomain.{CreditCard, PersonalLoan, GetAll}
 
   def getAll: GetAll = () => {
     val offers = List(

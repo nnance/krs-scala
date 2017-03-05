@@ -17,7 +17,7 @@ trait TestInfrastructure extends UserSystem with PartnerSystem {
   def getOffersFromRepo: GetOffers = getOffers(partnerRepo.getAll)
   def getUser: GetUser = repo.getUser
 
-  def getUserWithOffers: CreditScore => Future[Option[UserWithOffers]] =
+  def getUserWithOffersFromRepo: CreditScore => Future[Option[UserWithOffers]] =
     getUserWithOffers(getUser, getOffersFromRepo, filter, _)
 }
 
@@ -35,7 +35,7 @@ class UserSystemSpec extends FlatSpec with Matchers with TestInfrastructure {
   }
 
   "getUserWithOffers for id 2" should "have 2 offers" in {
-    val userWithOffers = Await.result(getUserWithOffers(2))
+    val userWithOffers = Await.result(getUserWithOffersFromRepo(2))
     userWithOffers.get.offers.length should be(2)
   }
 }

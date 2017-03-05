@@ -3,7 +3,7 @@ package krs.partner
 import com.twitter.finagle.Thrift
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
-import krs.partner.PartnerDomain.{CreditScore, GetAll, Offer}
+import krs.partner.PartnerDomain.{CreditScore, Offer}
 
 trait ServiceInfrastructure extends PartnerSystem {
   private val conf = com.typesafe.config.ConfigFactory.load();

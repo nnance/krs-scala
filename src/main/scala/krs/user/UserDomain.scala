@@ -16,6 +16,10 @@ object UserDomain {
     offers: Seq[Offer]
   )
 
+  case class UserNotFound(id: Int) extends Exception {
+    override def getMessage: String = s"User(${id.toString}) not found."
+  }
+
   type GetUser = Int => Option[User]
 }
 
