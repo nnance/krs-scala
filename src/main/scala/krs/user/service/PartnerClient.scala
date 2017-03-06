@@ -3,6 +3,7 @@ package krs.user.service
 import com.twitter.finagle.Thrift
 import com.twitter.util.Future
 import com.typesafe.config.Config
+import krs.partner.PartnerDomain.GetOffers
 import krs.partner.PartnerServiceImpl
 import krs.thriftscala.{PartnerOffer, PartnerService}
 
@@ -27,5 +28,8 @@ case class PartnerRemoteClient() extends PartnerClient {
 }
 
 case class PartnerLocalClient() extends PartnerClient {
-  val client = PartnerServiceImpl()
+
+  object ClientImpl extends PartnerServiceImpl with krs.partner.ServiceInfrastructure
+
+  val client = ClientImpl.service
 }

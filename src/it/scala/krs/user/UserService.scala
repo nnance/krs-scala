@@ -6,7 +6,9 @@ import krs.eligibility.EligibilitySystem
 import krs.user.UserDomain.UserNotFound
 import krs.user.service.PartnerLocalClient
 
-object TestIntegrationInfrastructure extends ServiceInfrastructure {
+object TestIntegrationInfrastructure extends
+  UserServiceImpl with
+  ServiceInfrastructure {
   val filter = EligibilitySystem.filterEligible
   override val partnerClient = PartnerLocalClient()
 }
@@ -14,7 +16,7 @@ object TestIntegrationInfrastructure extends ServiceInfrastructure {
 // scalastyle:off magic.number
 class UserServiceSpec extends FlatSpec with Matchers {
 
-  val service = TestIntegrationInfrastructure()
+  val service = TestIntegrationInfrastructure.service
 
   "getUser for id 2" should "have TestUser02 for the second user" in {
     val user = Await.result(service.getUser(2))

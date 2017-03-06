@@ -5,17 +5,35 @@ import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 import krs.partner.PartnerDomain.{CreditScore, Offer}
 
-trait ServiceInfrastructure extends PartnerSystem {
+trait PartnerServiceImpl extends PartnerSystem {
+
+  import krs.common.PartnerUtil
+  import krs.thriftscala.{PartnerResponse, PartnerService}
+
+  def repo: OfferRepository
+  def getOffersFromRepo: CreditScore => Future[Seq[Offer]] = score =>
+    getOffers(repo.getAll)(score)
+
+  def service: PartnerService[Future] =
+    new PartnerService[Future] {
+      def getOffers(creditScore: Int) =
+        getOffersFromRepo(creditScore).map(offers =>
+          PartnerResponse(offers.map(PartnerUtil.convertOffer)))
+    }
+
+}
+
+trait ServiceInfrastructure {
   private val conf = com.typesafe.config.ConfigFactory.load();
   private val partnerData = conf.getString("krs.partner.data")
 
   val repo = PartnerFileRepository(partnerData)
-
-  def getOffersFromRepo: CreditScore => Future[Seq[Offer]] = score =>
-    super.getOffers(repo.getAll)(score)
 }
 
-object PartnerServer extends TwitterServer {
+object PartnerServer extends
+  TwitterServer with
+  PartnerServiceImpl with
+  ServiceInfrastructure {
 
   val partnerService = statsReceiver.counter("partnerService")
 
@@ -26,25 +44,9 @@ object PartnerServer extends TwitterServer {
 
     val server = Thrift.server
       .withStatsReceiver(statsReceiver)
-      .serveIface(host, PartnerServiceImpl())
+      .serveIface(host, service)
 
     onExit { server.close() }
     Await.ready(server)
   }
-}
-
-object PartnerServiceImpl extends ServiceInfrastructure {
-
-  import com.twitter.util.Future
-  import krs.common.PartnerUtil
-  import krs.thriftscala.{PartnerResponse, PartnerService}
-
-  def apply(): PartnerService[Future] =
-    new PartnerService[Future] {
-
-      def getOffers(creditScore: Int) =
-        getOffersFromRepo(creditScore).map(offers =>
-          PartnerResponse(offers.map(PartnerUtil.convertOffer)))
-    }
-
 }
