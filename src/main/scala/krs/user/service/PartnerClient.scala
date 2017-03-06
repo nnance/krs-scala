@@ -1,10 +1,6 @@
 package krs.user.service
 
-import com.twitter.finagle.Thrift
 import com.twitter.util.Future
-import com.typesafe.config.Config
-import krs.partner.PartnerDomain.GetOffers
-import krs.partner.PartnerServiceImpl
 import krs.thriftscala.{PartnerOffer, PartnerService}
 
 trait PartnerClient {
@@ -20,6 +16,9 @@ trait PartnerClient {
 }
 
 case class PartnerRemoteClient() extends PartnerClient {
+  import com.twitter.finagle.Thrift
+  import com.typesafe.config.Config
+
   val conf: Config = com.typesafe.config.ConfigFactory.load()
   val partnerHost: String = conf.getString("krs.partner.host")
 
@@ -28,8 +27,10 @@ case class PartnerRemoteClient() extends PartnerClient {
 }
 
 case class PartnerLocalClient() extends PartnerClient {
+  import krs.partner.PartnerServiceImpl
+  import krs.partner.ServiceInfrastructure
 
-  object ClientImpl extends PartnerServiceImpl with krs.partner.ServiceInfrastructure
+  object ClientImpl extends PartnerServiceImpl with ServiceInfrastructure
 
   val client = ClientImpl.service
 }
